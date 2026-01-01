@@ -1,0 +1,65 @@
+---
+title: "PlinkArray: DelayedArray interface to plink bed-type files"
+shorttitle: "outlier dytection methods"
+author: "Vincent J. Carey, stvjc at channing.harvard.edu"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{PlinkArray: DelayedArray interface to plink bed-type files}
+  %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::html_document:
+    highlight: pygments
+    number_sections: yes
+    theme: united
+    toc: yes
+---
+
+# Introduction
+
+Many genetic studies employ [PLINK](https://www.cog-genomics.org/plink/2.0/)
+for data management and analysis.
+
+This package facilitates interrogation of PLINK bed files
+through the Bioconductor [DelayedArray](https://bioconductor.org/packages/DelayedArray/) protocol
+
+# Demonstration
+
+The `example_PlinkArray` function will 
+
+- retrieve a zip archive from a cloud store if needed, and  place it in the default BiocFileCache cache
+- unzip the cached archive to bed, bim, fam files
+- create the DelayedArray interface to the unzipped archive
+
+The example data are those distributed with tensorQTL, transformed
+to bed using plink2.
+
+```{r getl, message=FALSE}
+library(PlinkArray)
+gdemo = example_PlinkArray()
+gdemo
+```
+
+# Sanity check
+
+We will use ancestry information and approximate PCA
+to illustrate plausibility of the approach used here.
+
+We have codes for the ancestral origins of samples.
+```{r dosan}
+data(g445samples)
+table(g445samples$Population.code)
+```
+
+We'll take a random sample of 1000 SNP and retrieve
+10 PCs, then visualize aspects of the reexpression
+to PCs for discriminating population of ancestry.
+
+```{r dopca, message=FALSE}
+library(irlba)
+set.seed(1234)
+ss = sort(sample(seq_len(ncol(gdemo)), size=1000))
+pca = prcomp_irlba(gdemo[,ss],10)
+pairs(pca$x[,1:4], col=factor(g445samples$Population.code), pch=19, cex=.5)
+boxplot(split(pca$x[,2]+pca$x[,1], g445samples$Population.code))
+```
