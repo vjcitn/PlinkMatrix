@@ -63,3 +63,18 @@ pca = prcomp_irlba(gdemo[,ss],10)
 pairs(pca$x[,1:4], col=factor(g445samples$Population.code), pch=19, cex=.5)
 boxplot(split(pca$x[,2]+pca$x[,1], g445samples$Population.code))
 ```
+
+# Subsetting with GenomicRanges
+
+A `RangedPlink` class has been defined with a `subsetByOverlaps` method
+to simplify iteration over tiled genomes.
+
+```{r lkra}
+data(example_GRanges)
+ran1 = RangedPlink(gdemo, example_GRanges)
+little = GenomicRanges::GRanges("chr18:1-100000")
+subsetByOverlaps(ran1, little)
+```
+
+No subsetting by samples is permitted -- just build a new
+RangedPlink instance to accomplish this.
