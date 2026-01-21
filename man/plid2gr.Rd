@@ -4,10 +4,12 @@
 \alias{plid2gr}
 \title{produce GRanges from variant notation for plink example from geuvadis}
 \usage{
-plid2gr(x)
+plid2gr(x, sepused = "_")
 }
 \arguments{
 \item{x}{character vector of variant names}
+
+\item{sepused}{single character, defaults to "_"}
 }
 \value{
 GRanges instance
