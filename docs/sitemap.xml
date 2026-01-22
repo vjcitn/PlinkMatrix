@@ -7,6 +7,9 @@
 <url><loc>/index.html</loc></url>
 <url><loc>/reference/PlinkArray-package.html</loc></url>
 <url><loc>/reference/PlinkArray.html</loc></url>
+<url><loc>/reference/PlinkPyArray.html</loc></url>
+<url><loc>/reference/PlinkPyArraySeed-class.html</loc></url>
+<url><loc>/reference/PlinkPyArraySeed.html</loc></url>
 <url><loc>/reference/PlinkSeed-class.html</loc></url>
 <url><loc>/reference/PlinkSeed.html</loc></url>
 <url><loc>/reference/RangedPlink.html</loc></url>
@@ -15,13 +18,17 @@
 <url><loc>/reference/dimnames-PlinkSeed-method.html</loc></url>
 <url><loc>/reference/example_GRanges.html</loc></url>
 <url><loc>/reference/example_PlinkArray.html</loc></url>
+<url><loc>/reference/extract_array-PlinkPyArraySeed-method.html</loc></url>
 <url><loc>/reference/extract_array-PlinkSeed-method.html</loc></url>
 <url><loc>/reference/g445samples.html</loc></url>
 <url><loc>/reference/getSampleData.html</loc></url>
 <url><loc>/reference/getVariantData.html</loc></url>
 <url><loc>/reference/get_plink_example_path.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/plid2gr.html</loc></url>
+<url><loc>/reference/show-PlinkPyArraySeed-method.html</loc></url>
 <url><loc>/reference/show-PlinkSeed-method.html</loc></url>
+<url><loc>/reference/show-RangedPlink-method.html</loc></url>
 <url><loc>/reference/subsetByOverlaps-RangedPlink-GRanges-method.html</loc></url>
 </urlset>
 

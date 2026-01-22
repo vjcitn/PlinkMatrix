@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">PlinkArray</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.6</span>
       </span>
     </div>
 
@@ -68,7 +68,7 @@
       <h1 data-toc-skip>PlinkArray: DelayedArray interface to plink bed-type files</h1>
                         <h4 data-toc-skip class="author">Vincent J. Carey, stvjc at channing.harvard.edu</h4>
             
-            <h4 data-toc-skip class="date">January 02, 2026</h4>
+            <h4 data-toc-skip class="date">January 22, 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/vjcitn/PlinkArray/blob/HEAD/vignettes/PlinkArray.Rmd" class="external-link"><code>vignettes/PlinkArray.Rmd</code></a></small>
       <div class="hidden name"><code>PlinkArray.Rmd</code></div>
@@ -140,10 +140,8 @@
 <p>A <code>RangedPlink</code> class has been defined with a <code>subsetByOverlaps</code> method to simplify iteration over tiled genomes.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">example_GRanges</span><span class="op">)</span></span>
-<span><span class="va">ran1</span> <span class="op">=</span> <span class="fu"><a href="../reference/RangedPlink.html">RangedPlink</a></span><span class="op">(</span><span class="va">gdemo</span>, <span class="va">example_GRanges</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Loading required namespace: GenomicRanges</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">little</span> <span class="op">=</span> <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/GRanges-class.html" class="external-link">GRanges</a></span><span class="op">(</span><span class="st">"chr18:1-100000"</span><span class="op">)</span></span>
+<span><span class="va">ran1</span> <span class="op">=</span> <span class="fu"><a href="../reference/RangedPlink.html">RangedPlink</a></span><span class="op">(</span><span class="va">gdemo</span>, <span class="va">example_GRanges</span><span class="op">)</span></span>
+<span><span class="va">little</span> <span class="op">=</span> <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/GRanges-class.html" class="external-link">GRanges</a></span><span class="op">(</span><span class="st">"chr18:1-100000"</span><span class="op">)</span></span>
 <span><span class="fu">subsetByOverlaps</span><span class="op">(</span><span class="va">ran1</span>, <span class="va">little</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## RangedPlink with 353 variants on 445 samples.</span></span>
 <span><span class="co">##   some sample ids:</span></span>
