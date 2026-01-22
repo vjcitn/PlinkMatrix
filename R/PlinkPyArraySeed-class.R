@@ -13,36 +13,23 @@ setClass("PlinkPyArraySeed",
 )
 
 #' seed
+#' @param filepath character path to resource
+#' @param readerRef reticulate-imported `bed_reader` module
 #' @export
 PlinkPyArraySeed <- function(filepath, readerRef) {
-#    sanity checks
-#    ...
     filepath <- tools::file_path_as_absolute(filepath)
-#    ...
-#    reticulate::py_require("bed-reader")
-#    br = reticulate::import("bed_reader")
     stopifnot("open_bed" %in% names(readerRef))
     res = readerRef$open_bed(filepath)
     new("PlinkPyArraySeed", filepath=filepath, readerRef=readerRef,
        dim = as.integer(unlist(res$shape)), dimnames=list(res$iid, res$sid))
 }
 
-#setMethod("dim", "PlinkPyArraySeed",
-#    function(x)
-#    {
-##        - open the connection to the file
-##        - on.exit(close the connection)
-##        - extract the dimensions and return them in an integer vector
-#    reticulate::py_require("bed-reader")
-#    br = reticulate::import("bed_reader")
-#    res = br$open_bed(fi)
-#    on.exit(res <- NULL)
-#    as.integer(unlist(res$shape))
-#    }
-#)
 
 #' extractor
 #' @import DelayedArray
+#' @param x seed instance
+#' @param index list of suitable values for extracting elements
+#' @export
 setMethod("extract_array", "PlinkPyArraySeed", function(x, index) {
       dims = slot(x, "dim")
       dimnames = slot(x, "dimnames")  # guaranteed
@@ -69,6 +56,8 @@ setMethod("extract_array", "PlinkPyArraySeed", function(x, index) {
       ans
 })
 
+#' present seed concisely
+#' @param object instance of PlinkPyArraySeed
 setMethod("show", "PlinkPyArraySeed", function(object) {
  cat(sprintf("seed for Plink %d x %d\n", object@dim[1], object@dim[2]))
 })
@@ -76,6 +65,7 @@ setMethod("show", "PlinkPyArraySeed", function(object) {
 #' bed reader interface
 #' @import DelayedArray
 #' @import reticulate
+#' @param path character path to resource
 #' @examples
 #' folder = tempdir()
 #' pa = get_plink_example_path()

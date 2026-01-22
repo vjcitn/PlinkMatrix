@@ -14,6 +14,24 @@
   ...
 )
 }
+\arguments{
+\item{x}{instance of RangedPlink}
+
+\item{ranges}{instance of GenomicRanges}
+
+\item{maxgap}{integer, see subsetByOverlaps, defaults to -1L}
+
+\item{minoverlap}{integer, see subsetByOverlaps, defaults to 0L}
+
+\item{type}{character, see subsetByOverlaps, defaults to 'any'}
+
+\item{invert, }{logical, see subsetByOverlaps}
+
+\item{\dots}{not used}
+}
+\value{
+RangedPlink instance
+}
 \description{
 implement a form of subsetting
 }

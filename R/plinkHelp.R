@@ -1,5 +1,8 @@
 #' Get sample metadata
 #' @param x DelayedArray instance
+#' @examples
+#' tst = example_PlinkArray()
+#' head(getSampleData(tst))
 #' @export
 getSampleData <- function(x) {
   if (is(x, "DelayedArray")) {
@@ -10,6 +13,9 @@ getSampleData <- function(x) {
 
 #' Get variant metadata
 #' @param x DelayedArray instance
+#' @examples
+#' tst = example_PlinkArray()
+#' dim(getVariantData(tst))
 #' @export
 getVariantData <- function(x) {
   if (is(x, "DelayedArray")) {

@@ -12,3 +12,7 @@ getSampleData(x)
 \description{
 Get sample metadata
 }
+\examples{
+tst = example_PlinkArray()
+head(getSampleData(tst))
+}

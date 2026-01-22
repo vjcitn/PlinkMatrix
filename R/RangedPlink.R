@@ -4,6 +4,9 @@
 setClass("RangedPlink", slots=c(plinkCalls="DelayedMatrix",
     ranges="GRanges"))
 
+#' concise presentation
+#' @param object RangedPlink instance
+#' @export
 setMethod("show", "RangedPlink", function(object) {
  cat(sprintf("RangedPlink with %d variants on %d samples.\n", 
      ncol(slot(object, "plinkCalls")), nrow(slot(object, "plinkCalls"))))
@@ -36,6 +39,14 @@ RangedPlink = function(delmat, ranges) {
 #' implement a form of subsetting
 #' @import IRanges
 #' @import S4Vectors
+#' @param x instance of RangedPlink
+#' @param ranges instance of GenomicRanges
+#' @param maxgap integer, see subsetByOverlaps, defaults to -1L
+#' @param minoverlap integer, see subsetByOverlaps, defaults to 0L
+#' @param type character, see subsetByOverlaps, defaults to 'any'
+#' @param invert, logical, see subsetByOverlaps
+#' @param \dots not used
+#' @return RangedPlink instance
 #' @export
 setMethod("subsetByOverlaps", c("RangedPlink", "GRanges"), function (x, ranges, maxgap = -1L, minoverlap = 0L, type = c("any", 
     "start", "end", "within", "equal"), invert, ...) {

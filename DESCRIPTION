@@ -1,6 +1,6 @@
 Package: PlinkArray
 Title: DelayedArray interface for plink bed files
-Version: 0.0.5
+Version: 0.0.6
 Authors@R:
     person(given = "Vince",
            family = "Carey",
