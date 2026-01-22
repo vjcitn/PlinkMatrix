@@ -7,10 +7,12 @@
 getVariantData(x)
 }
 \arguments{
-\item{x}{DelayedArray instance
-tst = example_PlinkArray()
-dim(getVariantData(tst))}
+\item{x}{DelayedArray instance}
 }
 \description{
 Get variant metadata
+}
+\examples{
+tst = example_PlinkArray()
+dim(getVariantData(tst))
 }
