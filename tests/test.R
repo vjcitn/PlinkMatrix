@@ -1,4 +1,4 @@
-library(PlinkArray)
+library(PlinkMatrix)
 library(testthat)
 
-test_check("PlinkArray")
+test_check("PlinkMatrix")

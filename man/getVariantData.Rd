@@ -13,6 +13,6 @@ getVariantData(x)
 Get variant metadata
 }
 \examples{
-tst = example_PlinkArray()
+tst = example_PlinkMatrix()
 dim(getVariantData(tst))
 }

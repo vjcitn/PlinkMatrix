@@ -10,9 +10,9 @@ Authors@R:
 Description: DelayedArray interface for plink bed files.
 Depends: R (>= 4.0.0), methods, Rcpp, DelayedArray
 Suggests: knitr, BiocStyle, testthat, rmarkdown, irlba,
-	testthat
+	testthat, SummarizedExperiment
 Imports: BiocFileCache, GenomicRanges,
-	S4Vectors, IRanges, reticulate, IRanges
+	S4Vectors, IRanges, IRanges
 License: MIT + file LICENSE
 VignetteBuilder: knitr
 biocViews: Infrastructure, Genetics

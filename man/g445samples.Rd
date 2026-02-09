@@ -8,7 +8,7 @@
 data.frame
 }
 \usage{
-data("g445samples", package="PlinkArray")
+data("g445samples", package="PlinkMatrix")
 }
 \description{
 sample characteristics of 445 GEUVADIS samples

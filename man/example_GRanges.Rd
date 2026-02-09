@@ -3,14 +3,14 @@
 \docType{data}
 \name{example_GRanges}
 \alias{example_GRanges}
-\title{sample GRanges coordinated with example_PlinkArray}
+\title{sample GRanges coordinated with example_PlinkMatrix}
 \format{
 GRanges
 }
 \usage{
-data("example_GRanges", package="PlinkArray")
+data("example_GRanges", package="PlinkMatrix")
 }
 \description{
-sample GRanges coordinated with example_PlinkArray
+sample GRanges coordinated with example_PlinkMatrix
 }
 \keyword{datasets}

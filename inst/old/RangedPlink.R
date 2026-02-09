@@ -1,23 +1,23 @@
-# subsetByOverlaps(RangedPlink, gr) will subset to variants overlapping gr
-# other indexing blocked
-
-setClass("RangedPlink", slots=c(plinkCalls="DelayedMatrix",
-    ranges="GRanges"))
-
-#' concise presentation
-#' @param object RangedPlink instance
-#' @export
-setMethod("show", "RangedPlink", function(object) {
- cat(sprintf("RangedPlink with %d variants on %d samples.\n", 
-     ncol(slot(object, "plinkCalls")), nrow(slot(object, "plinkCalls"))))
- cat("  some sample ids:\n  ")
- cat(selectSome(rownames(slot(object, "plinkCalls"))), "\n")
- if (length(nn <- names(slot(object, "ranges")))>0) {
-  cat("  some range ids:\n  ")
-  cat(selectSome(nn), "\n")
-  }
-})
-
+## subsetByOverlaps(RangedPlink, gr) will subset to variants overlapping gr
+## other indexing blocked
+#
+#setClass("RangedPlink", slots=c(plinkCalls="DelayedMatrix",
+#    ranges="GRanges"))
+#
+##' concise presentation
+##' @param object RangedPlink instance
+##' @export
+#setMethod("show", "RangedPlink", function(object) {
+# cat(sprintf("RangedPlink with %d variants on %d samples.\n", 
+#     ncol(slot(object, "plinkCalls")), nrow(slot(object, "plinkCalls"))))
+# cat("  some sample ids:\n  ")
+# cat(selectSome(rownames(slot(object, "plinkCalls"))), "\n")
+# if (length(nn <- names(slot(object, "ranges")))>0) {
+#  cat("  some range ids:\n  ")
+#  cat(selectSome(nn), "\n")
+#  }
+#})
+#
 
 
 #' constructor for RangedPlink

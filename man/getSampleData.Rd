@@ -13,6 +13,6 @@ getSampleData(x)
 Get sample metadata
 }
 \examples{
-tst = example_PlinkArray()
+tst = example_PlinkMatrix()
 head(getSampleData(tst))
 }

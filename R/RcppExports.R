@@ -2,6 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 decode_bed_fast <- function(raw_bytes, n_samples) {
-    .Call(`_PlinkArray_decode_bed_fast`, raw_bytes, n_samples)
+    .Call(`_PlinkMatrix_decode_bed_fast`, raw_bytes, n_samples)
+}
+
+read_bed_fast <- function(file_name, row_idx, col_idx, n_samples) {
+    .Call(`_PlinkMatrix_read_bed_fast`, file_name, row_idx, col_idx, n_samples)
 }
 

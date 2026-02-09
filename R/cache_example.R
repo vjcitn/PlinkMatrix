@@ -5,7 +5,7 @@
 #' get_plink_example_path()
 #' @export
 get_plink_example_path = function(ca = BiocFileCache::BiocFileCache()) {
-  url = "https://mghp.osn.xsede.org/bir190004-bucket01/BiocPlinkArray/geuv445_plink.zip"
+  url = "https://mghp.osn.xsede.org/bir190004-bucket01/BiocPlinkMatrix/geuv445_plink.zip"
   inf = bfcquery(ca, "geuv445_plink.zip")
   nr = nrow(inf)
   if (nr == 0) {
@@ -15,16 +15,16 @@ get_plink_example_path = function(ca = BiocFileCache::BiocFileCache()) {
   inf$rpath
 }
   
-#' produce PlinkArray from example data
+#' produce PlinkMatrix from example data
 #' @param folder a path where unzipped example data will be managed
 #' @examples
-#' example_PlinkArray()
+#' example_PlinkMatrix()
 #' @export
-example_PlinkArray = function(folder = tempdir()) {
+example_PlinkMatrix = function(folder = tempdir()) {
   pa = get_plink_example_path()
   unzip(pa, exdir = folder)
   tmp = dir(folder, full.names=TRUE)
   remsuff = function(x) sub(".bed$", "", x)
   ppath = remsuff(grep("geuv445.bed", tmp, value=TRUE))
-  PlinkArray(ppath)
+  PlinkMatrix(ppath)
 }

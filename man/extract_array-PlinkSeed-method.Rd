@@ -14,3 +14,6 @@
 \description{
 Method: extract_array, internal
 }
+\note{
+Provided by Herve Pages.
+}

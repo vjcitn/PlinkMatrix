@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // decode_bed_fast
 NumericVector decode_bed_fast(RawVector raw_bytes, int n_samples);
-RcppExport SEXP _PlinkArray_decode_bed_fast(SEXP raw_bytesSEXP, SEXP n_samplesSEXP) {
+RcppExport SEXP _PlinkMatrix_decode_bed_fast(SEXP raw_bytesSEXP, SEXP n_samplesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,13 +22,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// read_bed_fast
+IntegerVector read_bed_fast(CharacterVector file_name, IntegerVector row_idx, IntegerVector col_idx, int n_samples);
+RcppExport SEXP _PlinkMatrix_read_bed_fast(SEXP file_nameSEXP, SEXP row_idxSEXP, SEXP col_idxSEXP, SEXP n_samplesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< CharacterVector >::type file_name(file_nameSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type row_idx(row_idxSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type col_idx(col_idxSEXP);
+    Rcpp::traits::input_parameter< int >::type n_samples(n_samplesSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_bed_fast(file_name, row_idx, col_idx, n_samples));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PlinkArray_decode_bed_fast", (DL_FUNC) &_PlinkArray_decode_bed_fast, 2},
+    {"_PlinkMatrix_decode_bed_fast", (DL_FUNC) &_PlinkMatrix_decode_bed_fast, 2},
+    {"_PlinkMatrix_read_bed_fast", (DL_FUNC) &_PlinkMatrix_read_bed_fast, 4},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_PlinkArray(DllInfo *dll) {
+RcppExport void R_init_PlinkMatrix(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

@@ -1,11 +1,11 @@
 ---
-title: "PlinkArray: DelayedArray interface to plink bed-type files"
+title: "PlinkMatrix: DelayedArray interface to plink bed-type files"
 shorttitle: "outlier dytection methods"
 author: "Vincent J. Carey, stvjc at channing.harvard.edu"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{PlinkArray: DelayedArray interface to plink bed-type files}
+  %\VignetteIndexEntry{PlinkMatrix: DelayedArray interface to plink bed-type files}
   %\VignetteEncoding{UTF-8}
 output:
   BiocStyle::html_document:
@@ -25,7 +25,7 @@ through the Bioconductor [DelayedArray](https://bioconductor.org/packages/Delaye
 
 # Demonstration
 
-The `example_PlinkArray` function will 
+The `example_PlinkMatrix` function will 
 
 - retrieve a zip archive from a cloud store if needed, and  place it in the default BiocFileCache cache
 - unzip the cached archive to bed, bim, fam files
@@ -35,8 +35,9 @@ The example data are those distributed with tensorQTL, transformed
 to bed using plink2.
 
 ```{r getl, message=FALSE}
-library(PlinkArray)
-gdemo = example_PlinkArray()
+library(PlinkMatrix)
+gdemo = example_PlinkMatrix()
+rownames(gdemo) = gsub("0_", "", rownames(gdemo))
 gdemo
 ```
 
@@ -64,17 +65,18 @@ pairs(pca$x[,1:4], col=factor(g445samples$Population.code), pch=19, cex=.5)
 boxplot(split(pca$x[,2]+pca$x[,1], g445samples$Population.code))
 ```
 
-# Subsetting with GenomicRanges
+# SummarizedExperiment wrapper; subsetting with GenomicRanges
 
-A `RangedPlink` class has been defined with a `subsetByOverlaps` method
-to simplify iteration over tiled genomes.
+We can use the Bioconductor pattern of "rows are features,
+columns are samples" with a transposed PlinkMatrix.
 
 ```{r lkra}
 data(example_GRanges)
-ran1 = RangedPlink(gdemo, example_GRanges)
+library(SummarizedExperiment)
+nse = SummarizedExperiment(list(genotypes=t(gdemo)), 
+   rowData=example_GRanges, colData=g445samples)
+nse
 little = GenomicRanges::GRanges("chr18:1-100000")
-subsetByOverlaps(ran1, little)
+subsetByOverlaps(nse, little)
 ```
 
-No subsetting by samples is permitted -- just build a new
-RangedPlink instance to accomplish this.
