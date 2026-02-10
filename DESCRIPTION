@@ -1,6 +1,6 @@
 Package: PlinkMatrix
 Title: DelayedArray interface for plink bed files
-Version: 0.0.7
+Version: 0.0.8
 Authors@R:
     person(given = "Vince",
            family = "Carey",
@@ -8,9 +8,9 @@ Authors@R:
            email = "stvjc@channing.harvard.edu",
            comment = c(ORCID = "0000-0003-4046-0063"))
 Description: DelayedArray interface for plink bed files.
-Depends: R (>= 4.0.0), methods, Rcpp, DelayedArray
+Depends: R (>= 4.0.0), methods, Rcpp, DelayedArray, SummarizedExperiment
 Suggests: knitr, BiocStyle, testthat, rmarkdown, irlba,
-	testthat, SummarizedExperiment
+	testthat, GenomeInfoDb
 Imports: BiocFileCache, GenomicRanges,
 	S4Vectors, IRanges, IRanges
 License: MIT + file LICENSE

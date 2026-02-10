@@ -17,14 +17,28 @@ get_plink_example_path = function(ca = BiocFileCache::BiocFileCache()) {
   
 #' produce PlinkMatrix from example data
 #' @param folder a path where unzipped example data will be managed
+#' @param as_RSE logical(1) if TRUE (default is FALSE) a RangedSummarizedExperiment is returned
+#' with rowRanges calculated from SNP ids
 #' @examples
 #' example_PlinkMatrix()
 #' @export
-example_PlinkMatrix = function(folder = tempdir()) {
+example_PlinkMatrix = function(folder = tempdir(), as_RSE=FALSE) {
+  data("g445samples", package="PlinkMatrix")
+  data("example_GRanges", package="PlinkMatrix")
   pa = get_plink_example_path()
   unzip(pa, exdir = folder)
   tmp = dir(folder, full.names=TRUE)
   remsuff = function(x) sub(".bed$", "", x)
   ppath = remsuff(grep("geuv445.bed", tmp, value=TRUE))
-  PlinkMatrix(ppath)
+  ans = PlinkMatrix(ppath)
+  if (as_RSE) {
+#   cn = colnames(ans) |> strsplit("_")
+#   addr = as.integer(sapply(cn, "[", 2))
+#   sqn = gsub("chr", "", sapply(cn, "[", 1))
+#   gr = GRanges(sqn, IRanges::IRanges(addr, width=1), a1=sapply(cn, "[", 3), a2=sapply(cn, "[", 4))
+   rownames(ans) = gsub("0_", "", rownames(ans))
+   ans = SummarizedExperiment(list(calls=t(ans)), rowData=example_GRanges, colData=g445samples)
+   }
+  ans
 }
+    

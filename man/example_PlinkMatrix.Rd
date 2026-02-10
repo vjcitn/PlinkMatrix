@@ -4,10 +4,13 @@
 \alias{example_PlinkMatrix}
 \title{produce PlinkMatrix from example data}
 \usage{
-example_PlinkMatrix(folder = tempdir())
+example_PlinkMatrix(folder = tempdir(), as_RSE = FALSE)
 }
 \arguments{
 \item{folder}{a path where unzipped example data will be managed}
+
+\item{as_RSE}{logical(1) if TRUE (default is FALSE) a RangedSummarizedExperiment is returned
+with rowRanges calculated from SNP ids}
 }
 \description{
 produce PlinkMatrix from example data
