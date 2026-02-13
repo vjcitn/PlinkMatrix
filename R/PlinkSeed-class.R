@@ -84,6 +84,7 @@ setMethod("chunkdim", "PlinkSeed",
 #' @param filepath path to plink bed, bim, fam resources without suffixes
 #' @export
 PlinkMatrix <- function(filepath) {
+  filepath = normalizePath(filepath, mustWork=FALSE) # ~ does not work?
   seed <- PlinkSeed(filepath)
   DelayedArray(seed)
 }
@@ -111,6 +112,7 @@ setMethod("DelayedArray", "PlinkSeed",
 #' @param x seed instance
 #' @param index list of suitable values for extracting elements
 #' @note Provided by Herve Pages.
+#' @export
 setMethod("extract_array", "PlinkSeed",
   function(x, index) {
     # index is a list of length 2: list(row_indices, col_indices)
