@@ -5,3 +5,13 @@ decode_bed_fast <- function(raw_bytes, n_samples) {
     .Call(`_PlinkArray_decode_bed_fast`, raw_bytes, n_samples)
 }
 
+#' read subset for use in delayed matrix approach
+#' @param prefix character path to bed resources and file prefix 
+#' @param sample_indices integer vector of snp indices
+#' @param sample_indices integer vector of sample indices
+#' @param n_total_samples optional
+#' @export
+read_bed_subset <- function(prefix, snp_indices, sample_indices, n_total_samples = NULL) {
+    .Call(`_PlinkArray_read_bed_subset`, prefix, snp_indices, sample_indices, n_total_samples)
+}
+

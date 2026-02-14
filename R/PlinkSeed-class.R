@@ -55,8 +55,10 @@ PlinkSeed <- function(filepath) {
   
   new("PlinkSeed",
       filepath = filepath,
-      dim = c(n_samples, n_variants),
-      dimnames = list(sample_ids, variant_ids),
+#      dim = c(n_samples, n_variants),
+#      dimnames = list(sample_ids, variant_ids),
+      dim = c(n_variants, n_samples),
+      dimnames = list(variant_ids, sample_ids),
       fam = fam,
       bim = bim)
 }
@@ -95,48 +97,59 @@ setMethod("extract_array", "PlinkSeed",
     } else {
       col_idx <- index[[2]]
     }
+
+    if (is(row_idx, "character"))
+      row_idx = as.integer(match(row_idx, x@dimnames[[1]]))
+    else row_idx = as.integer(row_idx)
+
+    if (is(col_idx, "character"))
+      col_idx = as.integer(match(col_idx, x@dimnames[[2]]))
+    else col_idx = as.integer(col_idx)
+
+    read_bed_subset(x@filepath, row_idx, col_idx) # hands back snps x samples
+})
     
-    # Allocate result matrix
-    result <- matrix(NA_real_, 
-                     nrow = length(row_idx), 
-                     ncol = length(col_idx))
-    
-    # Open BED file
-    bed_file <- paste0(x@filepath, ".bed")
-    con <- file(bed_file, "rb")
-    on.exit(close(con))
-    
-    # Check magic number (first 3 bytes should be 0x6C, 0x1B, 0x01)
-    magic <- readBin(con, "raw", n = 3)
-    if (!identical(magic, as.raw(c(0x6C, 0x1B, 0x01)))) {
-      stop("Invalid BED file format")
-    }
-    
-    # Calculate bytes per variant (SNP-major mode)
-    bytes_per_variant <- ceiling(n_samples / 4)
-    
-    # Read each requested variant
-    for (j in seq_along(col_idx)) {
-      variant_idx <- col_idx[j]
-      
-      # Seek to the position of this variant
-      # 3 bytes header + (variant_idx - 1) * bytes_per_variant
-      seek(con, where = 3 + (variant_idx - 1) * bytes_per_variant, 
-           origin = "start")
-      
-      # Read the bytes for this variant
-      raw_data <- readBin(con, "raw", n = bytes_per_variant)
-      
-      # Decode genotypes
-      genotypes <- decode_bed_fast(raw_data, n_samples)
-      
-      # Extract requested samples
-      result[, j] <- genotypes[row_idx]
-    }
-    
-    result
-  }
-)
+#    # Allocate result matrix
+#    result <- matrix(NA_real_, 
+#                     nrow = length(row_idx), 
+#                     ncol = length(col_idx))
+#    
+#    # Open BED file
+#    bed_file <- paste0(x@filepath, ".bed")
+#    con <- file(bed_file, "rb")
+#    on.exit(close(con))
+#    
+#    # Check magic number (first 3 bytes should be 0x6C, 0x1B, 0x01)
+#    magic <- readBin(con, "raw", n = 3)
+#    if (!identical(magic, as.raw(c(0x6C, 0x1B, 0x01)))) {
+#      stop("Invalid BED file format")
+#    }
+#    
+#    # Calculate bytes per variant (SNP-major mode)
+#    bytes_per_variant <- ceiling(n_samples / 4)
+#    
+#    # Read each requested variant
+#    for (j in seq_along(col_idx)) {
+#      variant_idx <- col_idx[j]
+#      
+#      # Seek to the position of this variant
+#      # 3 bytes header + (variant_idx - 1) * bytes_per_variant
+#      seek(con, where = 3 + (variant_idx - 1) * bytes_per_variant, 
+#           origin = "start")
+#      
+#      # Read the bytes for this variant
+#      raw_data <- readBin(con, "raw", n = bytes_per_variant)
+#      
+#      # Decode genotypes
+#      genotypes <- decode_bed_fast(raw_data, n_samples)
+#      
+#      # Extract requested samples
+#      result[, j] <- genotypes[row_idx]
+#    }
+#    
+#    result
+#  }
+#)
 
 # Optional: Define chunkdim for better performance
 setMethod("chunkdim", "PlinkSeed",

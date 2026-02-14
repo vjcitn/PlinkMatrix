@@ -22,9 +22,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// read_bed_subset
+NumericMatrix read_bed_subset(std::string prefix, IntegerVector snp_indices, IntegerVector sample_indices, Nullable<int> n_total_samples);
+RcppExport SEXP _PlinkArray_read_bed_subset(SEXP prefixSEXP, SEXP snp_indicesSEXP, SEXP sample_indicesSEXP, SEXP n_total_samplesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type prefix(prefixSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type snp_indices(snp_indicesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type sample_indices(sample_indicesSEXP);
+    Rcpp::traits::input_parameter< Nullable<int> >::type n_total_samples(n_total_samplesSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_bed_subset(prefix, snp_indices, sample_indices, n_total_samples));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_PlinkArray_decode_bed_fast", (DL_FUNC) &_PlinkArray_decode_bed_fast, 2},
+    {"_PlinkArray_read_bed_subset", (DL_FUNC) &_PlinkArray_read_bed_subset, 4},
     {NULL, NULL, 0}
 };
 
