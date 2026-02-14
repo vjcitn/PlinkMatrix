@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DelayedArray interface for plink bed files • PlinkArray</title>
+<title>DelayedArray interface for plink bed files • PlinkMatrix</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -32,15 +32,15 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">PlinkArray</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.6</span>
+        <a class="navbar-link" href="index.html">PlinkMatrix</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="articles/PlinkArray.html">Get started</a>
+  <a href="articles/PlinkMatrix.html">Get started</a>
 </li>
 <li>
   <a href="reference/index.html">Reference</a>
@@ -48,7 +48,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/vjcitn/PlinkArray/" class="external-link">
+  <a href="https://github.com/vjcitn/PlinkMatrix/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
 
   </a>
@@ -66,32 +66,28 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="plinkarray-delayedarray-interface-for-plink-genotypes">PlinkArray: DelayedArray interface for plink genotypes<a class="anchor" aria-label="anchor" href="#plinkarray-delayedarray-interface-for-plink-genotypes"></a>
+<div class="page-header"><h1 id="plinkmatrix-delayedarray-interface-for-plink-genotypes">PlinkMatrix: DelayedArray interface for plink genotypes<a class="anchor" aria-label="anchor" href="#plinkmatrix-delayedarray-interface-for-plink-genotypes"></a>
 </h1></div>
 <p>Given a collection of .bed, .bim and .fam files produced for use with Plink, this package facilitates simple array-like operations for retrieving genotype data.</p>
 <p>As an example, the GEUVADIS study genotypes distributed with tensorQTL were transformed to <code>geuv445.{bed,bim,fam}</code>. In a folder containing these files, we would proceed as follows to interrogate the genotypes.</p>
-<pre><code>&gt; library(PlinkArray)
-&gt; gdemo = PlinkArray("geuv445")
+<pre><code>&gt; library(PlinkMatrix)
+&gt; gdemo = example_PlinkMatrix()
+&gt; colnames(gdemo) = gsub("0_", "", colnames(gdemo))
 &gt; gdemo
-&lt;445 x 367759&gt; DelayedMatrix object of type "double":
-             chr18_10644_C_G_b38 ... chr18_80259245_C_A_b38
-0_HG00096                      0   .                      0
-0_HG00097                      0   .                      0
-0_HG00099                      0   .                      0
-0_HG00100                      0   .                      0
-0_HG00101                      0   .                      0
-      ...                      .   .                      .
-0_NA20814                      0   .                      0
-0_NA20815                      0   .                      0
-0_NA20819                      0   .                      0
-0_NA20826                      0   .                      0
-0_NA20828                      0   .                      0
-&gt; sum(gdemo[4:10, 50:100])
-[1] 114
-&gt; summary(colSums(gdemo))
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
-    9.0    20.0    77.0   190.1   290.0   881.0 </code></pre>
-<p>The associated data can be obtained in this package with <code><a href="reference/example_PlinkArray.html">example_PlinkArray()</a></code>.</p>
+&lt;367759 x 445&gt; DelayedMatrix object of type "double":
+                        HG00096 HG00097 HG00099 ... NA20826 NA20828
+    chr18_10644_C_G_b38       0       0       0   .       0       0
+    chr18_10847_C_A_b38       0       0       0   .       0       0
+    chr18_11275_G_A_b38       0       0       0   .       0       0
+    chr18_11358_G_A_b38       0       0       0   .       0       0
+    chr18_11445_G_A_b38       0       0       0   .       0       0
+                    ...       .       .       .   .       .       .
+chr18_80259028_AG_A_b38       1       2       2   .       0       1
+ chr18_80259147_G_C_b38       0       0       0   .       0       0
+ chr18_80259181_A_G_b38       0       0       0   .       0       0
+   chr18_8025919C_G_b38       1       0       0   .       1       0
+ chr18_80259245_C_A_b38       0       0       0   .       0       0</code></pre>
+<p>The associated data can be obtained in this package with <code>example_PlinkArray()</code>.</p>
 <p>See “Get started” tab above for more information.</p>
 </div>
   </div>
@@ -100,8 +96,8 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/vjcitn/PlinkArray/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/vjcitn/PlinkArray/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/vjcitn/PlinkMatrix/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/vjcitn/PlinkMatrix/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -118,7 +114,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing PlinkArray</a></li>
+<li><a href="authors.html#citation">Citing PlinkMatrix</a></li>
 </ul>
 </div>
 
