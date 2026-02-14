@@ -23,7 +23,7 @@ int count_samples_from_fam(std::string fam_file) {
 
 //' read subset for use in delayed matrix approach
 //' @param prefix character path to bed resources and file prefix 
-//' @param sample_indices integer vector of snp indices
+//' @param snp_indices integer vector of snp indices
 //' @param sample_indices integer vector of sample indices
 //' @param n_total_samples optional
 //' @export

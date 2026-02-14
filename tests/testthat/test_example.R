@@ -27,8 +27,8 @@
 
 test_that("example is as expected", {
  ex = example_PlinkMatrix()
- expect_true(all(dim(ex) == c(445L, 367759L)))
- tt = table(as.numeric(ex[,"chr18_10644_C_G_b38"]))
+ expect_true(all(dim(ex) == c(367759L, 445L)))
+ tt = table(as.numeric(ex["chr18_10644_C_G_b38",]))
  expect_true(all(as.integer(tt)==c(430L, 15L)))
 })
 

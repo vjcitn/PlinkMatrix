@@ -10,18 +10,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// decode_bed_fast
-NumericVector decode_bed_fast(RawVector raw_bytes, int n_samples);
-RcppExport SEXP _PlinkMatrix_decode_bed_fast(SEXP raw_bytesSEXP, SEXP n_samplesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< RawVector >::type raw_bytes(raw_bytesSEXP);
-    Rcpp::traits::input_parameter< int >::type n_samples(n_samplesSEXP);
-    rcpp_result_gen = Rcpp::wrap(decode_bed_fast(raw_bytes, n_samples));
-    return rcpp_result_gen;
-END_RCPP
-}
 // read_bed_subset
 NumericMatrix read_bed_subset(std::string prefix, IntegerVector snp_indices, IntegerVector sample_indices, Nullable<int> n_total_samples);
 RcppExport SEXP _PlinkMatrix_read_bed_subset(SEXP prefixSEXP, SEXP snp_indicesSEXP, SEXP sample_indicesSEXP, SEXP n_total_samplesSEXP) {
@@ -36,25 +24,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// read_bed_fast
-IntegerVector read_bed_fast(CharacterVector file_name, IntegerVector row_idx, IntegerVector col_idx, int n_samples);
-RcppExport SEXP _PlinkMatrix_read_bed_fast(SEXP file_nameSEXP, SEXP row_idxSEXP, SEXP col_idxSEXP, SEXP n_samplesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< CharacterVector >::type file_name(file_nameSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type row_idx(row_idxSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type col_idx(col_idxSEXP);
-    Rcpp::traits::input_parameter< int >::type n_samples(n_samplesSEXP);
-    rcpp_result_gen = Rcpp::wrap(read_bed_fast(file_name, row_idx, col_idx, n_samples));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PlinkMatrix_decode_bed_fast", (DL_FUNC) &_PlinkMatrix_decode_bed_fast, 2},
     {"_PlinkMatrix_read_bed_subset", (DL_FUNC) &_PlinkMatrix_read_bed_subset, 4},
-    {"_PlinkMatrix_read_bed_fast", (DL_FUNC) &_PlinkMatrix_read_bed_fast, 4},
     {NULL, NULL, 0}
 };
 

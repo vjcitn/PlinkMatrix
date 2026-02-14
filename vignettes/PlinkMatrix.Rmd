@@ -37,7 +37,7 @@ to bed using plink2.
 ```{r getl, message=FALSE}
 library(PlinkMatrix)
 gdemo = example_PlinkMatrix()
-rownames(gdemo) = gsub("0_", "", rownames(gdemo))
+colnames(gdemo) = gsub("0_", "", colnames(gdemo))
 gdemo
 ```
 
@@ -59,21 +59,18 @@ to PCs for discriminating population of ancestry.
 ```{r dopca, message=FALSE}
 library(irlba)
 set.seed(1234)
-ss = sort(sample(seq_len(ncol(gdemo)), size=1000))
-pca = prcomp_irlba(gdemo[,ss],10)
+ss = sort(sample(seq_len(nrow(gdemo)), size=1000))
+pca = prcomp_irlba(t(gdemo[ss,]),10)
 pairs(pca$x[,1:4], col=factor(g445samples$Population.code), pch=19, cex=.5)
 boxplot(split(pca$x[,2]+pca$x[,1], g445samples$Population.code))
 ```
 
 # SummarizedExperiment wrapper; subsetting with GenomicRanges
 
-We can use the Bioconductor pattern of "rows are features,
-columns are samples" with a transposed PlinkMatrix.
-
 ```{r lkra}
 data(example_GRanges)
 library(SummarizedExperiment)
-nse = SummarizedExperiment(list(genotypes=t(gdemo)), 
+nse = SummarizedExperiment(list(genotypes=gdemo), 
    rowData=example_GRanges, colData=g445samples)
 nse
 little = GenomicRanges::GRanges("chr18:1-100000")
