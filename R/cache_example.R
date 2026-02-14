@@ -16,6 +16,7 @@ get_plink_example_path = function(ca = BiocFileCache::BiocFileCache()) {
 }
   
 #' produce PlinkMatrix from example data
+#' @import SummarizedExperiment
 #' @param folder a path where unzipped example data will be managed
 #' @param as_RSE logical(1) if TRUE (default is FALSE) a RangedSummarizedExperiment is returned
 #' with rowRanges calculated from SNP ids

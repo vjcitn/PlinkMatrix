@@ -55,6 +55,8 @@ PlinkSeed <- function(filepath) {
   
   new("PlinkSeed",
       filepath = filepath,
+ #     dim = c(n_variants, n_samples),
+ #     dimnames = list(variant_ids, sample_ids),
       dim = c(n_samples, n_variants),
       dimnames = list(sample_ids, variant_ids),
       fam = fam,
@@ -72,6 +74,41 @@ setMethod("dim", "PlinkSeed", function(x) x@dim)
 setMethod("dimnames", "PlinkSeed", function(x) x@dimnames)
 
 
+#' Method: extract_array, internal 
+#' @param x seed instance
+#' @param index list of suitable values for extracting elements
+setMethod("extract_array", "PlinkSeed",
+  function(x, index) {
+    # index is a list of length 2: list(row_indices, col_indices)
+    # If NULL, means select all
+    
+    n_samples <- x@dim[1]
+    n_variants <- x@dim[2]
+    
+    # Handle NULL indices (select all)
+    if (is.null(index[[1]])) {
+      row_idx <- seq_len(n_samples)
+    } else {
+      row_idx <- index[[1]]
+    }
+    
+    if (is.null(index[[2]])) {
+      col_idx <- seq_len(n_variants)
+    } else {
+      col_idx <- index[[2]]
+    }
+
+    if (is(row_idx, "character"))
+      row_idx = as.integer(match(row_idx, x@dimnames[[1]]))
+    else row_idx = as.integer(row_idx)
+
+    if (is(col_idx, "character"))
+      col_idx = as.integer(match(col_idx, x@dimnames[[2]]))
+    else col_idx = as.integer(col_idx)
+
+    read_bed_subset(x@filepath, row_idx, col_idx) # hands back snps x samples
+})
+    
 
 # Optional: Define chunkdim for better performance
 setMethod("chunkdim", "PlinkSeed",
