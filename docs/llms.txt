@@ -1,0 +1,95 @@
+<div id="main" class="col-md-9" role="main">
+
+# PlinkMatrix: DelayedArray interface for plink genotypes
+
+<div class="section level1">
+
+Given a collection of .bed, .bim and .fam files produced for use with
+Plink, this package facilitates simple array-like operations for
+retrieving genotype data.
+
+As an example, the GEUVADIS study genotypes distributed with tensorQTL
+were transformed to `geuv445.{bed,bim,fam}`. In a folder containing
+these files, we would proceed as follows to interrogate the genotypes.
+
+    > library(PlinkMatrix)
+    > gdemo = example_PlinkMatrix()
+    > colnames(gdemo) = gsub("0_", "", colnames(gdemo))
+    > gdemo
+    <367759 x 445> DelayedMatrix object of type "double":
+                            HG00096 HG00097 HG00099 ... NA20826 NA20828
+        chr18_10644_C_G_b38       0       0       0   .       0       0
+        chr18_10847_C_A_b38       0       0       0   .       0       0
+        chr18_11275_G_A_b38       0       0       0   .       0       0
+        chr18_11358_G_A_b38       0       0       0   .       0       0
+        chr18_11445_G_A_b38       0       0       0   .       0       0
+                        ...       .       .       .   .       .       .
+    chr18_80259028_AG_A_b38       1       2       2   .       0       1
+     chr18_80259147_G_C_b38       0       0       0   .       0       0
+     chr18_80259181_A_G_b38       0       0       0   .       0       0
+       chr18_8025919C_G_b38       1       0       0   .       1       0
+     chr18_80259245_C_A_b38       0       0       0   .       0       0
+
+The associated data can be obtained in this package with
+`example_PlinkArray()`.
+
+See “Get started” tab above for more information.
+
+</div>
+
+</div>
+
+<div id="main" class="col-md-9" role="main">
+
+# Package index
+
+<div class="section level2">
+
+## All functions
+
+</div>
+
+<div class="section level2">
+
+-   `PlinkMatrix()` : Constructor for DelayedArray
+-   `PlinkSeed-class` : Define the PlinkSeed class
+-   `PlinkSeed()` : Constructor function for seed for plink bed format
+-   `decode_bed_genotypes()` : Helper function to decode BED format
+-   `dim(<PlinkSeed>)` : Method: dim for delayed plink
+-   `dimnames(<PlinkSeed>)` : Method: dimnames for delayed plink
+-   `example_GRanges` : sample GRanges coordinated with
+    example\_PlinkMatrix
+-   `example_PlinkMatrix()` : produce PlinkMatrix from example data
+-   `extract_array(<PlinkSeed>)` : Method: extract\_array, internal
+-   `g445samples` : sample characteristics of 445 GEUVADIS samples
+-   `getSampleData()` : Get sample metadata
+-   `getVariantData()` : Get variant metadata
+-   `get_plink_example_path()` : operate with BiocFileCache to retrieve
+    zip file of plink example data
+-   `plid2gr()` : produce GRanges from variant notation for plink
+    example from geuvadis
+-   `read_bed_subset()` : read subset for use in delayed matrix approach
+-   `show(<PlinkSeed>)` : present seed concisely
+
+</div>
+
+</div>
+
+<div id="main" class="col-md-9" role="main">
+
+# Articles
+
+<div class="section">
+
+### All vignettes
+
+<div class="section-desc">
+
+</div>
+
+-   [PlinkMatrix: DelayedArray interface to plink bed-type
+    files](https://github.com/vjcitn/PlinkMatrix/articles/PlinkMatrix.md):
+
+</div>
+
+</div>
