@@ -77,3 +77,8 @@ little = GenomicRanges::GRanges("chr18:1-100000")
 subsetByOverlaps(nse, little)
 ```
 
+# Session information 
+
+```{r lksess}
+sessionInfo()
+```

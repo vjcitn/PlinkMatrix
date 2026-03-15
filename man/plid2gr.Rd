@@ -17,3 +17,6 @@ GRanges instance
 \description{
 produce GRanges from variant notation for plink example from geuvadis
 }
+\examples{
+plid2gr("chr18_80259028_AG_A_b38")
+}

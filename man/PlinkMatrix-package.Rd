@@ -5,7 +5,7 @@
 \alias{PlinkMatrix-package}
 \title{PlinkMatrix: DelayedArray interface for plink bed files}
 \description{
-DelayedArray interface for plink bed files.
+This package provides a DelayedArray interface for plink bed files. There is support for interfacing to plink genotype data via RangedSummarizedExperiment. Example data from the GEUVADIS project (internationalgenome.org) are used for demonstration.
 }
 \seealso{
 Useful links:

@@ -12,3 +12,7 @@
 \description{
 present seed concisely
 }
+\examples{
+ex = example_PlinkMatrix()
+ex
+}

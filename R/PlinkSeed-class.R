@@ -119,6 +119,7 @@ setMethod("chunkdim", "PlinkSeed",
 
 #' Constructor for DelayedArray
 #' @param filepath path to plink bed, bim, fam resources without suffixes
+#' @return An instance of PlinkMatrix
 #' @export
 PlinkMatrix <- function(filepath) {
   filepath = normalizePath(filepath, mustWork=FALSE) # ~ does not work?
@@ -128,6 +129,9 @@ PlinkMatrix <- function(filepath) {
 
 #' present seed concisely
 #' @param object instance of PlinkSeed
+#' @examples
+#' ex = example_PlinkMatrix()
+#' ex
 #' @export
 setMethod("show", "PlinkSeed",
   function(object) {

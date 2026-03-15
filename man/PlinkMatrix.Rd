@@ -9,6 +9,9 @@ PlinkMatrix(filepath)
 \arguments{
 \item{filepath}{path to plink bed, bim, fam resources without suffixes}
 }
+\value{
+An instance of PlinkMatrix
+}
 \description{
 Constructor for DelayedArray
 }

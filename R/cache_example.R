@@ -34,9 +34,6 @@ example_PlinkMatrix = function(folder = tempdir(), as_RSE=FALSE) {
   ans = PlinkMatrix(ppath)
   if (as_RSE) {
 #   cn = colnames(ans) |> strsplit("_")
-#   addr = as.integer(sapply(cn, "[", 2))
-#   sqn = gsub("chr", "", sapply(cn, "[", 1))
-#   gr = GRanges(sqn, IRanges::IRanges(addr, width=1), a1=sapply(cn, "[", 3), a2=sapply(cn, "[", 4))
    colnames(ans) = gsub("0_", "", colnames(ans))
    ans = SummarizedExperiment(list(calls=ans), rowData=example_GRanges, colData=g445samples)
    }
