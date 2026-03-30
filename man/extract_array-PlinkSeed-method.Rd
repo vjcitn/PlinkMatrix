@@ -14,4 +14,7 @@
 \description{
 Method: extract_array, internal
 }
+\examples{
+methods(class="PlinkSeed")
+}
 \keyword{internal}

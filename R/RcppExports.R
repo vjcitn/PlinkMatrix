@@ -6,6 +6,8 @@
 #' @param snp_indices integer vector of snp indices
 #' @param sample_indices integer vector of sample indices
 #' @param n_total_samples optional
+#' @examples
+#' read_bed_subset
 #' @export
 read_bed_subset <- function(prefix, snp_indices, sample_indices, n_total_samples = NULL) {
     .Call(`_PlinkMatrix_read_bed_subset`, prefix, snp_indices, sample_indices, n_total_samples)

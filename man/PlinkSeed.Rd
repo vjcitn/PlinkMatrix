@@ -12,4 +12,7 @@ PlinkSeed(filepath)
 \description{
 Constructor function for seed for plink bed format
 }
+\examples{
+PlinkSeed
+}
 \keyword{internal}

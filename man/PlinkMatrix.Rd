@@ -15,3 +15,6 @@ An instance of PlinkMatrix
 \description{
 Constructor for DelayedArray
 }
+\examples{
+PlinkMatrix
+}

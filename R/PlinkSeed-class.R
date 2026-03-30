@@ -3,6 +3,8 @@
 #' @import methods
 #' @import DelayedArray
 #' @keywords internal
+#' @examples
+#' getClass("PlinkSeed")
 #' @export
 setClass("PlinkSeed",
   slots = c(
@@ -18,6 +20,8 @@ setClass("PlinkSeed",
 #' Constructor function for seed for plink bed format
 #' @param filepath character string without suffixes
 #' @keywords internal
+#' @examples
+#' PlinkSeed
 #' @export
 PlinkSeed <- function(filepath) {
   # Remove .bed extension if present
@@ -69,6 +73,8 @@ PlinkSeed <- function(filepath) {
 
 #' Method: dim for delayed plink
 #' @param x PlinkSeed instance
+#' @examples
+#' methods(class="PlinkSeed")
 #' @export
 setMethod("dim", "PlinkSeed", function(x) x@dim)
 
@@ -82,6 +88,8 @@ setMethod("dimnames", "PlinkSeed", function(x) x@dimnames)
 #' @keywords internal
 #' @param x seed instance
 #' @param index list of suitable values for extracting elements
+#' @examples
+#' methods(class="PlinkSeed")
 setMethod(
   "extract_array", "PlinkSeed",
   function(x, index) {
@@ -132,6 +140,8 @@ setMethod(
 #' Constructor for DelayedArray
 #' @param filepath path to plink bed, bim, fam resources without suffixes
 #' @return An instance of PlinkMatrix
+#' @examples
+#' PlinkMatrix
 #' @export
 PlinkMatrix <- function(filepath) {
   filepath <- normalizePath(filepath, mustWork = FALSE) # ~ does not work?

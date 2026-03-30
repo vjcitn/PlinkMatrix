@@ -1,6 +1,8 @@
 #' Helper function to decode BED format
 #' @param raw_bytes byte stream from file
 #' @param n_samples number of samples
+#' @examples
+#' decode_bed_genotypes
 #' @keywords internal
 decode_bed_genotypes <- function(raw_bytes, n_samples) {
   # Lookup table for decoding (NOW COUNTING A1 ALLELE)

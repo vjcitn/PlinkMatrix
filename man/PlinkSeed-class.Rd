@@ -7,4 +7,7 @@
 \description{
 Define the PlinkSeed class
 }
+\examples{
+getClass("PlinkSeed")
+}
 \keyword{internal}

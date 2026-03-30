@@ -12,3 +12,6 @@
 \description{
 Method: dim for delayed plink
 }
+\examples{
+methods(class="PlinkSeed")
+}
