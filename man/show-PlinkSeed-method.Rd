@@ -13,6 +13,6 @@
 present seed concisely
 }
 \examples{
-ex = example_PlinkMatrix()
+ex <- example_PlinkMatrix()
 ex
 }

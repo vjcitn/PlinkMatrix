@@ -18,5 +18,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Vince Carey \email{stvjc@channing.harvard.edu} (\href{https://orcid.org/0000-0003-4046-0063}{ORCID})
 
+Other contributors:
+\itemize{
+  \item NHGRI U24HG004059 [funder]
+}
+
 }
 \keyword{internal}

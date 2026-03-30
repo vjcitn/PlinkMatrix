@@ -9,10 +9,13 @@ getSampleData(x)
 \arguments{
 \item{x}{DelayedArray instance}
 }
+\value{
+data.frame
+}
 \description{
 Get sample metadata
 }
 \examples{
-tst = example_PlinkMatrix()
+tst <- example_PlinkMatrix()
 head(getSampleData(tst))
 }

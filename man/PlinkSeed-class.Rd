@@ -7,3 +7,4 @@
 \description{
 Define the PlinkSeed class
 }
+\keyword{internal}

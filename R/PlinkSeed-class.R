@@ -1,27 +1,28 @@
-
 #' Define the PlinkSeed class
 #' @importFrom utils read.table unzip
 #' @import methods
 #' @import DelayedArray
+#' @keywords internal
 #' @export
 setClass("PlinkSeed",
   slots = c(
-    filepath = "character",      # Path to .bed file (without extension)
-    dim = "integer",            # Dimensions: c(n_samples, n_variants)
-    dimnames = "list",          # List of sample IDs and variant IDs
-    fam = "data.frame",         # .fam file content
-    bim = "data.frame"          # .bim file content
+    filepath = "character", # Path to .bed file (without extension)
+    dim = "integer", # Dimensions: c(n_samples, n_variants)
+    dimnames = "list", # List of sample IDs and variant IDs
+    fam = "data.frame", # .fam file content
+    bim = "data.frame" # .bim file content
   ),
   contains = "Array"
 )
 
 #' Constructor function for seed for plink bed format
 #' @param filepath character string without suffixes
+#' @keywords internal
 #' @export
 PlinkSeed <- function(filepath) {
   # Remove .bed extension if present
-  filepath <- sub("\\.bed$", "", filepath)  # consider filepath_as_absolute from tools
-  
+  filepath <- sub("\\.bed$", "", filepath) # consider filepath_as_absolute from tools
+
   # Check files exist
   if (!file.exists(paste0(filepath, ".bed"))) {
     stop("BED file not found: ", filepath, ".bed")
@@ -32,35 +33,38 @@ PlinkSeed <- function(filepath) {
   if (!file.exists(paste0(filepath, ".bim"))) {
     stop("BIM file not found: ", filepath, ".bim")
   }
-  
+
   # Read .fam file (sample information)
-  fam <- read.table(paste0(filepath, ".fam"), 
-                    header = FALSE,
-                    col.names = c("FID", "IID", "PID", "MID", "Sex", "Phenotype"),
-                    colClasses = "character")
-  
+  fam <- read.table(paste0(filepath, ".fam"),
+    header = FALSE,
+    col.names = c("FID", "IID", "PID", "MID", "Sex", "Phenotype"),
+    colClasses = "character"
+  )
+
   # Read .bim file (variant information)
   bim <- read.table(paste0(filepath, ".bim"),
-                    header = FALSE,
-                    col.names = c("CHR", "ID", "cM", "POS", "A1", "A2"),
-                    colClasses = "character")
-  
+    header = FALSE,
+    col.names = c("CHR", "ID", "cM", "POS", "A1", "A2"),
+    colClasses = "character"
+  )
+
   # Dimensions: samples x variants
   n_samples <- nrow(fam)
   n_variants <- nrow(bim)
-  
+
   # Create dimnames
   sample_ids <- paste(fam$FID, fam$IID, sep = "_")
   variant_ids <- bim$ID
-  
+
   new("PlinkSeed",
-      filepath = filepath,
-      dim = c(n_variants, n_samples),
-      dimnames = list(variant_ids, sample_ids),
- #     dim = c(n_samples, n_variants),
- #     dimnames = list(sample_ids, variant_ids),
-      fam = fam,
-      bim = bim)
+    filepath = filepath,
+    dim = c(n_variants, n_samples),
+    dimnames = list(variant_ids, sample_ids),
+    #     dim = c(n_samples, n_variants),
+    #     dimnames = list(sample_ids, variant_ids),
+    fam = fam,
+    bim = bim
+  )
 }
 
 #' Method: dim for delayed plink
@@ -74,44 +78,52 @@ setMethod("dim", "PlinkSeed", function(x) x@dim)
 setMethod("dimnames", "PlinkSeed", function(x) x@dimnames)
 
 
-#' Method: extract_array, internal 
+#' Method: extract_array, internal
+#' @keywords internal
 #' @param x seed instance
 #' @param index list of suitable values for extracting elements
-setMethod("extract_array", "PlinkSeed",
+setMethod(
+  "extract_array", "PlinkSeed",
   function(x, index) {
     # index is a list of length 2: list(row_indices, col_indices)
     # If NULL, means select all
-    
+
     n_samples <- x@dim[1]
     n_variants <- x@dim[2]
-    
+
     # Handle NULL indices (select all)
     if (is.null(index[[1]])) {
       row_idx <- seq_len(n_samples)
     } else {
       row_idx <- index[[1]]
     }
-    
+
     if (is.null(index[[2]])) {
       col_idx <- seq_len(n_variants)
     } else {
       col_idx <- index[[2]]
     }
 
-    if (is(row_idx, "character"))
-      row_idx = as.integer(match(row_idx, x@dimnames[[1]]))
-    else row_idx = as.integer(row_idx)
+    if (is(row_idx, "character")) {
+      row_idx <- as.integer(match(row_idx, x@dimnames[[1]]))
+    } else {
+      row_idx <- as.integer(row_idx)
+    }
 
-    if (is(col_idx, "character"))
-      col_idx = as.integer(match(col_idx, x@dimnames[[2]]))
-    else col_idx = as.integer(col_idx)
+    if (is(col_idx, "character")) {
+      col_idx <- as.integer(match(col_idx, x@dimnames[[2]]))
+    } else {
+      col_idx <- as.integer(col_idx)
+    }
 
     read_bed_subset(x@filepath, row_idx, col_idx) # hands back snps x samples
-})
-    
+  }
+)
+
 
 # Optional: Define chunkdim for better performance
-setMethod("chunkdim", "PlinkSeed",
+setMethod(
+  "chunkdim", "PlinkSeed",
   function(x) {
     as.integer(c(x@dim[1], min(50000, x@dim[2])))
   }
@@ -122,7 +134,7 @@ setMethod("chunkdim", "PlinkSeed",
 #' @return An instance of PlinkMatrix
 #' @export
 PlinkMatrix <- function(filepath) {
-  filepath = normalizePath(filepath, mustWork=FALSE) # ~ does not work?
+  filepath <- normalizePath(filepath, mustWork = FALSE) # ~ does not work?
   seed <- PlinkSeed(filepath)
   DelayedArray(seed)
 }
@@ -130,22 +142,25 @@ PlinkMatrix <- function(filepath) {
 #' present seed concisely
 #' @param object instance of PlinkSeed
 #' @examples
-#' ex = example_PlinkMatrix()
+#' ex <- example_PlinkMatrix()
 #' ex
 #' @export
-setMethod("show", "PlinkSeed",
+setMethod(
+  "show", "PlinkSeed",
   function(object) {
     cat("PlinkSeed object\n")
     cat("Filepath:", object@filepath, "\n")
-    cat("Dimensions:", object@dim[1], "samples x", 
-        object@dim[2], "variants\n")
+    cat(
+      "Dimensions:", object@dim[1], "samples x",
+      object@dim[2], "variants\n"
+    )
   }
 )
 
 
-setClass("PlinkMatrix", contains="DelayedMatrix", slots=c(seed="PlinkSeed"))
+setClass("PlinkMatrix", contains = "DelayedMatrix", slots = c(seed = "PlinkSeed"))
 
-setMethod("DelayedArray", "PlinkSeed",
-    function(seed) new_DelayedArray(seed, "PlinkMatrix")
+setMethod(
+  "DelayedArray", "PlinkSeed",
+  function(seed) new_DelayedArray(seed, "PlinkMatrix")
 )
-

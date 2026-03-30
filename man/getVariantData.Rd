@@ -9,10 +9,13 @@ getVariantData(x)
 \arguments{
 \item{x}{DelayedArray instance}
 }
+\value{
+data.frame
+}
 \description{
 Get variant metadata
 }
 \examples{
-tst = example_PlinkMatrix()
+tst <- example_PlinkMatrix()
 dim(getVariantData(tst))
 }

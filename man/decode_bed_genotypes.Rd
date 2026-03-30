@@ -14,3 +14,4 @@ decode_bed_genotypes(raw_bytes, n_samples)
 \description{
 Helper function to decode BED format
 }
+\keyword{internal}

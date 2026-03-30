@@ -9,6 +9,9 @@ get_plink_example_path(ca = BiocFileCache::BiocFileCache())
 \arguments{
 \item{ca}{BiocFileCache instance}
 }
+\value{
+character string with path to example in cache
+}
 \description{
 operate with BiocFileCache to retrieve zip file of plink example data
 }

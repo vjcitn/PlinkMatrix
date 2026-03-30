@@ -7,13 +7,11 @@
 #' @examples
 #' plid2gr("chr18_80259028_AG_A_b38")
 #' @export
-plid2gr = function (x, sepused="_") 
-{
-    ss = strsplit(x, sepused)
-    pos = as.integer(sapply(ss, "[", 2))
-    ch = vapply(ss, function(x) x[1], character(1))
-    ans = GRanges(ch, IRanges(pos, width = 1))
-    names(ans) = x
-    ans
+plid2gr <- function(x, sepused = "_") {
+  ss <- strsplit(x, sepused)
+  pos <- as.integer(sapply(ss, "[", 2))
+  ch <- vapply(ss, function(x) x[1], character(1))
+  ans <- GRanges(ch, IRanges(pos, width = 1))
+  names(ans) <- x
+  ans
 }
-

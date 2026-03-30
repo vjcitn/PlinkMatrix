@@ -13,4 +13,8 @@ data("example_GRanges", package="PlinkMatrix")
 \description{
 sample GRanges coordinated with example_PlinkMatrix
 }
+\examples{
+data("example_GRanges", package="PlinkMatrix")
+head(example_GRanges)
+}
 \keyword{datasets}
