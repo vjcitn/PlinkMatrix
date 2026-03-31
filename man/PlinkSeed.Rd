@@ -9,6 +9,9 @@ PlinkSeed(filepath)
 \arguments{
 \item{filepath}{character string without suffixes}
 }
+\value{
+PlinkSeed instance
+}
 \description{
 Constructor function for seed for plink bed format
 }

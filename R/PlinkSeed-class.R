@@ -2,6 +2,7 @@
 #' @importFrom utils read.table unzip
 #' @import methods
 #' @import DelayedArray
+#' @return class definition
 #' @keywords internal
 #' @examples
 #' getClass("PlinkSeed")
@@ -19,6 +20,7 @@ setClass("PlinkSeed",
 
 #' Constructor function for seed for plink bed format
 #' @param filepath character string without suffixes
+#' @return PlinkSeed instance
 #' @keywords internal
 #' @examples
 #' PlinkSeed
@@ -73,12 +75,14 @@ PlinkSeed <- function(filepath) {
 
 #' Method: dim for delayed plink
 #' @param x PlinkSeed instance
+#' @return 2-vector
 #' @examples
 #' methods(class="PlinkSeed")
 #' @export
 setMethod("dim", "PlinkSeed", function(x) x@dim)
 
 #' Method: dimnames for delayed plink
+#' @return list of dimnames
 #' @param x PlinkSeed instance
 #' @export
 setMethod("dimnames", "PlinkSeed", function(x) x@dimnames)
@@ -86,6 +90,7 @@ setMethod("dimnames", "PlinkSeed", function(x) x@dimnames)
 
 #' Method: extract_array, internal
 #' @keywords internal
+#' @return method definition
 #' @param x seed instance
 #' @param index list of suitable values for extracting elements
 #' @examples
@@ -151,6 +156,7 @@ PlinkMatrix <- function(filepath) {
 
 #' present seed concisely
 #' @param object instance of PlinkSeed
+#' @return side effect of cat
 #' @examples
 #' ex <- example_PlinkMatrix()
 #' ex
@@ -173,4 +179,4 @@ setClass("PlinkMatrix", contains = "DelayedMatrix", slots = c(seed = "PlinkSeed"
 setMethod(
   "DelayedArray", "PlinkSeed",
   function(seed) new_DelayedArray(seed, "PlinkMatrix")
-)
+) 

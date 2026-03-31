@@ -9,6 +9,9 @@
 \arguments{
 \item{x}{PlinkSeed instance}
 }
+\value{
+list of dimnames
+}
 \description{
 Method: dimnames for delayed plink
 }

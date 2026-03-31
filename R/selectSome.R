@@ -1,4 +1,5 @@
 #' abbreviated display
+#' @return abbreviated display
 #' @keywords internal
 selectSome <- function(obj, maxToShow = 5) {
   # from Biobase

@@ -6,6 +6,7 @@
 #' @param snp_indices integer vector of snp indices
 #' @param sample_indices integer vector of sample indices
 #' @param n_total_samples optional
+#' @return matrix
 #' @examples
 #' read_bed_subset
 #' @export

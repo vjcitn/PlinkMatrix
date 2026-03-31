@@ -9,7 +9,7 @@
 #' @export
 plid2gr <- function(x, sepused = "_") {
   ss <- strsplit(x, sepused)
-  pos <- as.integer(sapply(ss, "[", 2))
+  pos <- as.integer(vapply(ss, function(x) x[2], character(1)))
   ch <- vapply(ss, function(x) x[1], character(1))
   ans <- GRanges(ch, IRanges(pos, width = 1))
   names(ans) <- x

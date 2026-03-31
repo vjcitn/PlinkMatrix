@@ -9,6 +9,9 @@
 \arguments{
 \item{x}{PlinkSeed instance}
 }
+\value{
+2-vector
+}
 \description{
 Method: dim for delayed plink
 }

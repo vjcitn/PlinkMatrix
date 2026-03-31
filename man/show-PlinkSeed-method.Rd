@@ -9,6 +9,9 @@
 \arguments{
 \item{object}{instance of PlinkSeed}
 }
+\value{
+side effect of cat
+}
 \description{
 present seed concisely
 }

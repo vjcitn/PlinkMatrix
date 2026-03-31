@@ -6,6 +6,9 @@
 \usage{
 selectSome(obj, maxToShow = 5)
 }
+\value{
+abbreviated display
+}
 \description{
 abbreviated display
 }

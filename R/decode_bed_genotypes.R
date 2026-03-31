@@ -1,6 +1,7 @@
 #' Helper function to decode BED format
 #' @param raw_bytes byte stream from file
 #' @param n_samples number of samples
+#' @return numeric vector
 #' @examples
 #' PlinkMatrix:::decode_bed_genotypes(raw(4), 4L)
 #' @keywords internal

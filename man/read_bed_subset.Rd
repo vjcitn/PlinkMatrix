@@ -15,6 +15,9 @@ read_bed_subset(prefix, snp_indices, sample_indices, n_total_samples = NULL)
 
 \item{n_total_samples}{optional}
 }
+\value{
+matrix
+}
 \description{
 read subset for use in delayed matrix approach
 }

@@ -11,6 +11,9 @@ decode_bed_genotypes(raw_bytes, n_samples)
 
 \item{n_samples}{number of samples}
 }
+\value{
+numeric vector
+}
 \description{
 Helper function to decode BED format
 }

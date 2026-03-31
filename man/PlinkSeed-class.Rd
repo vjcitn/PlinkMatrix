@@ -4,6 +4,9 @@
 \name{PlinkSeed-class}
 \alias{PlinkSeed-class}
 \title{Define the PlinkSeed class}
+\value{
+class definition
+}
 \description{
 Define the PlinkSeed class
 }

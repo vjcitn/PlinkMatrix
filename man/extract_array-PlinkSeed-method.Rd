@@ -11,6 +11,9 @@
 
 \item{index}{list of suitable values for extracting elements}
 }
+\value{
+method definition
+}
 \description{
 Method: extract_array, internal
 }
