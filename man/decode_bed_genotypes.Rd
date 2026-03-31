@@ -15,6 +15,6 @@ decode_bed_genotypes(raw_bytes, n_samples)
 Helper function to decode BED format
 }
 \examples{
-decode_bed_genotypes
+PlinkMatrix:::decode_bed_genotypes(raw(4), 4L)
 }
 \keyword{internal}
