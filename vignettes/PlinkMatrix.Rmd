@@ -1,6 +1,6 @@
 ---
 title: "PlinkMatrix: DelayedArray interface to plink bed-type files"
-shorttitle: "outlier dytection methods"
+shorttitle: "Delayed interface to Plink resources*
 author: "Vincent J. Carey, stvjc at channing.harvard.edu"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 vignette: >
