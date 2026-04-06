@@ -1,6 +1,6 @@
 ---
 title: "PlinkMatrix: DelayedArray interface to plink bed-type files"
-shorttitle: "Delayed interface to Plink resources*
+shorttitle: "Delayed interface to Plink resources"
 author: "Vincent J. Carey, stvjc at channing.harvard.edu"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 vignette: >
