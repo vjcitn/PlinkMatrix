@@ -29,7 +29,7 @@ chr18_80259028_AG_A_b38       1       2       2   .       0       1
  chr18_80259245_C_A_b38       0       0       0   .       0       0
 ```
 
-The associated data can be obtained in this package with `example_PlinkArray()`.
+The associated data can be obtained in this package with `example_PlinkMatrix()`.
 
 See "Get started" tab above for more information.
 

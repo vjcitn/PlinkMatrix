@@ -1,6 +1,6 @@
 Package: PlinkMatrix
 Title: DelayedArray interface for plink bed files
-Version: 0.99.4
+Version: 0.99.5
 Authors@R:
     c(person(given = "Vince",
            family = "Carey",
