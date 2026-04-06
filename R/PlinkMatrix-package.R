@@ -1,8 +1,14 @@
-#' @keywords internal
-"_PACKAGE"
 
-## usethis namespace: start
-#' @useDynLib PlinkMatrix, .registration = TRUE
+#' Delayed interface to Plink genotype files
+
+#' @description
+#' This package includes C++ code to interface to Plink files.
+#' Large-scale genotype calls can be managed in a RangedSummarized
+#' Experiment instance.
+
+#' @name PlinkMatrix-pkg
+#' @useDynLib PlinkMatrix, .registration=TRUE
 #' @importFrom Rcpp sourceCpp
-## usethis namespace: end
+#' @import methods
 NULL
+
