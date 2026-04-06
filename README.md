@@ -4,6 +4,16 @@ Given a collection of .bed, .bim and .fam files produced
 for use with Plink, this package facilitates simple
 array-like operations for retrieving genotype data.
 
+## Installation
+
+Use Bioconductor 3.23.
+
+```
+BiocManager::install("PlinkMatrix")
+```
+
+## Example
+
 As an example, the GEUVADIS study genotypes distributed
 with tensorQTL were transformed to `geuv445.{bed,bim,fam}`.
 In a folder containing these files, we would proceed

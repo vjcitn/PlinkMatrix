@@ -23,6 +23,14 @@ for data management and analysis.
 This package facilitates interrogation of PLINK bed files
 through the Bioconductor [DelayedArray](https://bioconductor.org/packages/DelayedArray/) protocol
 
+# Installation
+
+Use Bioconductor 3.23.
+
+```{r lkb,eval=FALSE}
+BiocManager::install("PlinkMatrix")
+```
+
 # Demonstration
 
 The `example_PlinkMatrix` function will 
