@@ -1,0 +1,234 @@
+---
+title: "2. What SVD Does"
+output: learnr::tutorial
+runtime: shiny_prerendered
+description: >
+  Builds geometric intuition for the Singular Value Decomposition --
+  rotate, stretch, rotate -- using small matrices and 2D point clouds,
+  with no proofs.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+tutorial_options(exercise.timelimit = 60)
+
+plot_points <- function(pts, main = "", xlim = c(-3, 3), ylim = c(-3, 3),
+                         close = FALSE) {
+  plot(pts, asp = 1, pch = 19, col = "steelblue",
+       xlim = xlim, ylim = ylim, main = main,
+       xlab = "x", ylab = "y")
+  abline(h = 0, v = 0, col = "grey80")
+  if (close) {
+    polygon(pts, border = "steelblue", lwd = 2)
+  }
+}
+```
+
+## Every matrix is rotate - stretch - rotate
+
+Any matrix $A$, no matter what it looks like, can be written as a product
+of three matrices:
+
+$$ A = U D V^\top $$
+
+- $V^\top$ is an orthogonal matrix: it only **rotates** (or reflects)
+  points, it never stretches them.
+- $D$ is a diagonal matrix: it **stretches** each coordinate axis by some
+  non-negative amount.
+- $U$ is another orthogonal matrix: another **rotation**.
+
+This is the Singular Value Decomposition (SVD). The goal of this tutorial
+is to make "rotate, stretch, rotate" visible, not to prove it.
+
+## Orthogonal matrices are rotations
+
+You already know that for an invertible matrix $M$, $M^{-1}M = I$. An
+**orthogonal** matrix is one where the transpose *is* the inverse:
+$V^\top V = I$. That is a much cheaper operation than a general inverse --
+just transpose.
+
+Here is a 2D rotation matrix by angle $\theta$:
+
+```{r rot-demo, exercise=TRUE}
+theta <- pi / 6   # 30 degrees
+R <- matrix(c(cos(theta), sin(theta),
+              -sin(theta), cos(theta)),
+            nrow = 2, byrow = TRUE)
+R
+
+t(R) %*% R   # should be (numerically) the identity matrix
+```
+
+```{r quiz-orth, echo=FALSE}
+quiz(
+  question("For an orthogonal matrix V, what is V^T %*% V?",
+    answer("The identity matrix", correct = TRUE),
+    answer("A diagonal matrix of variances"),
+    answer("The zero matrix"),
+    answer("V itself"),
+    allow_retry = TRUE
+  )
+)
+```
+
+Apply `R` to a handful of 2D points and see that distances and angles
+between points are preserved -- only the whole picture rotates.
+
+```{r rot-points, exercise=TRUE, exercise.setup = "rot-demo"}
+pts <- matrix(c(1, 0,
+                 2, 0,
+                 2, 1,
+                 1, 1), ncol = 2, byrow = TRUE)
+rotated <- pts %*% t(R)
+
+par(mfrow = c(1, 2))
+plot_points(pts, "Original square", close = TRUE)
+plot_points(rotated, "After rotation by R", close = TRUE)
+```
+
+Rotation changes *where the points sit*, but not their shape -- the square
+is still a square, just turned.
+
+## Stretching with a diagonal matrix
+
+Now apply a diagonal matrix instead. A diagonal matrix just rescales each
+coordinate axis independently.
+
+```{r stretch-ex, exercise=TRUE}
+D <- matrix(c(2, 0,
+              0, 0.5), nrow = 2)
+D
+
+pts <- matrix(c(1, 0,
+                 2, 0,
+                 2, 1,
+                 1, 1), ncol = 2, byrow = TRUE)
+stretched <- pts %*% D
+
+par(mfrow = c(1, 2))
+plot_points(pts, "Original square", close = TRUE)
+plot_points(stretched, "After stretching by D", close = TRUE)
+```
+
+Notice: the square is no longer a square. It is stretched along x
+(multiplied by 2) and squeezed along y (multiplied by 0.5). Unlike
+rotation, stretching *does* change shape. The stretch factors (here, 2 and
+0.5) are called **singular values**, and they are always arranged from
+largest to smallest.
+
+## Putting it together: SVD of a real matrix
+
+R's `svd()` function takes any matrix $A$ and returns exactly the three
+pieces $U$, $D$ (as a vector `d` of singular values), and $V$ such that
+$A = U \, \text{diag}(d) \, V^\top$.
+
+```{r svd-demo, exercise=TRUE}
+A <- matrix(c(3, 1,
+              1, 3,
+              2, 2), nrow = 3, byrow = TRUE)
+A
+
+sv <- svd(A)
+sv$u   # orthogonal, 3x2
+sv$d   # singular values, largest first
+sv$v   # orthogonal, 2x2
+```
+
+```{r reconstruct-ex, exercise=TRUE, exercise.setup = "svd-demo"}
+# Reconstruct A from sv$u, sv$d, and sv$v.
+# Hint: diag(sv$d) turns the vector of singular values into a diagonal matrix.
+
+```
+
+```{r reconstruct-ex-hint}
+A_rebuilt <- sv$u %*% diag(sv$d) %*% t(sv$v)
+```
+
+```{r reconstruct-ex-solution}
+A_rebuilt <- sv$u %*% diag(sv$d) %*% t(sv$v)
+A_rebuilt
+A   # compare -- should match up to rounding
+```
+
+## Truncating: keeping only the dominant stretch
+
+Here is the idea that makes SVD useful for genotype data with thousands of
+SNPs: if you keep only the **largest** singular value (and its matching
+columns of $U$ and $V$), you get the best possible rank-1 approximation to
+$A$ -- a simplified version of the matrix that still captures as much of
+its structure as a single direction can.
+
+```{r truncate-ex, exercise=TRUE, exercise.setup = "svd-demo"}
+# Build a rank-1 approximation to A using only the first singular value
+# and the first columns of sv$u and sv$v.
+
+```
+
+```{r truncate-ex-hint}
+A_rank1 <- sv$d[1] * (sv$u[, 1, drop = FALSE] %*% t(sv$v[, 1, drop = FALSE]))
+```
+
+```{r truncate-ex-solution}
+A_rank1 <- sv$d[1] * (sv$u[, 1, drop = FALSE] %*% t(sv$v[, 1, drop = FALSE]))
+A_rank1
+A
+```
+
+```{r quiz-truncate, echo=FALSE}
+quiz(
+  question("If you keep only the single largest singular value, what have you kept?",
+    answer("The one direction along which the matrix's rows (or columns) vary the most", correct = TRUE),
+    answer("The row of A with the largest sum"),
+    answer("A random subset of entries of A"),
+    answer("The average of all entries in A"),
+    allow_retry = TRUE
+  ),
+  question("As you keep more singular values/vectors (rank 1, then rank 2, then rank 3, ...), the reconstruction...",
+    answer("Gets closer and closer to A, exactly recovering it once you keep all of them", correct = TRUE),
+    answer("Gets worse, because more pieces means more error"),
+    answer("Stays exactly the same regardless of how many you keep"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Recap
+
+- Any matrix factors as $A = U D V^\top$: rotate, stretch, rotate.
+- $U$ and $V$ are orthogonal -- their transpose is their inverse, so no
+  real "inversion" work is needed to undo a rotation.
+- The diagonal entries of $D$ (the singular values) tell you *how much*
+  stretch happens along each of a set of mutually orthogonal directions,
+  ordered from most to least.
+- Keeping only the top few singular values/vectors gives the best
+  low-rank summary of a matrix -- the fewer dimensions you need to capture
+  most of a matrix's structure, the more "redundant" or "structured" the
+  original data were.
+
+In the next tutorial, you will see that when $A$ is a *centered* data
+matrix, this decomposition **is** Principal Components Analysis.
+
+## Finishing up
+
+```{r exit-button, echo=FALSE}
+shiny::actionButton("exit_tutorial", "Exit tutorial and return to R console",
+  icon = shiny::icon("power-off")
+)
+```
+
+```{r context="server"}
+shiny::observeEvent(input$exit_tutorial, {
+  shiny::showNotification(
+    "Stopping the tutorial. You can now return to your R console.",
+    type = "message", duration = 5
+  )
+  session$onFlushed(function() {
+    later::later(function() shiny::stopApp(), delay = 0.5)
+  }, once = TRUE)
+})
+```
+
+When you are done, click the button above rather than interrupting R with
+Ctrl-C. It cleanly shuts down this tutorial's local web server and hands
+control back to your R console.

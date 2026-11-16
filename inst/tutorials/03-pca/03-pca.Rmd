@@ -1,0 +1,190 @@
+---
+title: "3. From SVD to PCA"
+output: learnr::tutorial
+runtime: shiny_prerendered
+description: >
+  Shows that Principal Components Analysis is the SVD of a centered data
+  matrix, using a small visualizable dataset before moving to genotypes.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+tutorial_options(exercise.timelimit = 60)
+```
+
+## PCA is SVD, applied to centered data
+
+In Tutorial 1 you built a centered genotype matrix `Gc` and formed
+`t(Gc) %*% Gc`, a samples-by-samples similarity matrix. In Tutorial 2 you
+saw that any matrix decomposes as $A = U D V^\top$: rotate, stretch,
+rotate.
+
+Principal Components Analysis is nothing more than: **center your data,
+then take its SVD.** The "principal components" are new coordinates --
+linear combinations of the original variables -- chosen so that the first
+one captures as much spread (variance) in the data as a single direction
+possibly can, the second captures as much of what's left as a direction
+orthogonal to the first can, and so on.
+
+## A 2-variable toy example
+
+Before genotypes, use two correlated variables you can plot directly.
+
+```{r toy-data, exercise=TRUE}
+set.seed(42)
+n <- 60
+x <- rnorm(n, sd = 2)
+y <- 0.8 * x + rnorm(n, sd = 0.7)
+toy <- cbind(x, y)
+plot(toy, asp = 1, pch = 19, col = "steelblue",
+     main = "Two correlated variables")
+```
+
+Just by looking at the scatterplot: is there a direction along which these
+points are most spread out? Is there a roughly perpendicular direction
+along which they are much less spread out?
+
+```{r quiz-look, echo=FALSE}
+quiz(
+  question("Looking at the scatterplot, along which direction are the points most spread out?",
+    answer("Roughly along the diagonal, where x and y increase together", correct = TRUE),
+    answer("Exactly along the x-axis"),
+    answer("Exactly along the y-axis"),
+    answer("There is no direction of greater spread; it's spread evenly in all directions"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Centering, then SVD, by hand
+
+```{r center-toy, exercise=TRUE, exercise.setup = "toy-data"}
+toy_c <- scale(toy, center = TRUE, scale = FALSE)  # subtract column means only
+colMeans(toy_c)  # should be (numerically) zero
+
+sv <- svd(toy_c)
+sv$d        # singular values
+sv$v        # right singular vectors -- these are the PC *directions*
+```
+
+`sv$v` gives you, as columns, the two orthogonal directions: the first
+column is the direction of maximum spread (PC1), the second is the
+remaining orthogonal direction (PC2).
+
+```{r pc-directions, exercise=TRUE, exercise.setup = "center-toy"}
+plot(toy_c, asp = 1, pch = 19, col = "steelblue",
+     main = "Centered data with PC directions")
+abline(h = 0, v = 0, col = "grey80")
+# PC1 direction, scaled for visibility
+arrows(0, 0, 3 * sv$v[1, 1], 3 * sv$v[2, 1], col = "firebrick", lwd = 2)
+# PC2 direction
+arrows(0, 0, 3 * sv$v[1, 2], 3 * sv$v[2, 2], col = "darkgreen", lwd = 2)
+legend("topleft", legend = c("PC1", "PC2"), col = c("firebrick", "darkgreen"), lwd = 2)
+```
+
+The red arrow (PC1) should point along the long axis of the point cloud;
+the green arrow (PC2), perpendicular to it, along the short axis.
+
+## The scores: re-expressing each point in PC coordinates
+
+Multiplying the centered data by the matrix of PC directions converts
+each point's (x, y) coordinates into (PC1, PC2) coordinates. This is, once
+again, just a matrix product you already know how to compute.
+
+```{r scores-ex, exercise=TRUE, exercise.setup = "center-toy"}
+# Compute the PC scores: multiply toy_c by sv$v
+
+```
+
+```{r scores-ex-hint}
+scores <- toy_c %*% sv$v
+```
+
+```{r scores-ex-solution}
+scores <- toy_c %*% sv$v
+plot(scores, asp = 1, pch = 19, col = "steelblue",
+     xlab = "PC1", ylab = "PC2",
+     main = "Data re-expressed in PC coordinates")
+abline(h = 0, v = 0, col = "grey80")
+```
+
+Notice that in PC coordinates, the spread along the horizontal axis (PC1)
+is now much larger than along the vertical axis (PC2) -- by construction,
+since PC1 was chosen to be the direction of maximum spread.
+
+## Checking against R's built-in `prcomp`
+
+You don't need to do this by hand in practice -- `prcomp()` does exactly
+this (center, then SVD) for you.
+
+```{r prcomp-ex, exercise=TRUE, exercise.setup = "toy-data"}
+pr <- prcomp(toy, center = TRUE, scale. = FALSE)
+pr$sdev        # standard deviations of each PC -- related to singular values
+pr$rotation    # the PC directions -- compare to sv$v above
+head(pr$x)     # the PC scores -- compare to `scores` above
+```
+
+## How much variance does each PC explain?
+
+The singular values (or `pr$sdev`) tell you how much spread is captured
+by each PC. A **scree plot** shows this directly.
+
+```{r scree-ex, exercise=TRUE, exercise.setup = "prcomp-ex"}
+var_explained <- pr$sdev^2 / sum(pr$sdev^2)
+barplot(var_explained, names.arg = paste0("PC", seq_along(var_explained)),
+        ylab = "Proportion of variance explained",
+        main = "Scree plot")
+```
+
+```{r quiz-scree, echo=FALSE}
+quiz(
+  question("In this 2-variable example, PC1 explains most of the variance. Why?",
+    answer("Because x and y were constructed to be correlated, so most of the spread lies along one diagonal direction", correct = TRUE),
+    answer("Because PC1 is always defined to explain the most variance, regardless of the data"),
+    answer("Because of a coding error -- with real data this never happens"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Recap
+
+- PCA = center the data, then take its SVD (or equivalently, eigendecompose
+  the covariance matrix `t(Xc) %*% Xc`, the object you built in Tutorial 1).
+- The right singular vectors (`sv$v`, or `pr$rotation`) are the PC
+  *directions*: new axes, each orthogonal to the last, ranked by how much
+  spread they capture.
+- The scores (`toy_c %*% sv$v`, or `pr$x`) are the data re-expressed in
+  those new coordinates.
+- A scree plot (variance explained per PC) tells you how many PCs are
+  worth looking at.
+
+With a 2-variable toy example, PC1 and PC2 are the whole story. With
+thousands of SNPs, the same machinery runs -- but now PC1 and PC2 alone
+can reveal structure, such as ancestry, that is invisible in any single
+SNP. That is the subject of the final tutorial.
+
+## Finishing up
+
+```{r exit-button, echo=FALSE}
+shiny::actionButton("exit_tutorial", "Exit tutorial and return to R console",
+  icon = shiny::icon("power-off")
+)
+```
+
+```{r context="server"}
+shiny::observeEvent(input$exit_tutorial, {
+  shiny::showNotification(
+    "Stopping the tutorial. You can now return to your R console.",
+    type = "message", duration = 5
+  )
+  session$onFlushed(function() {
+    later::later(function() shiny::stopApp(), delay = 0.5)
+  }, once = TRUE)
+})
+```
+
+When you are done, click the button above rather than interrupting R with
+Ctrl-C. It cleanly shuts down this tutorial's local web server and hands
+control back to your R console.

@@ -1,0 +1,210 @@
+---
+title: "1. Genotypes as a Matrix"
+output: learnr::tutorial
+runtime: shiny_prerendered
+description: >
+  A refresher on matrix multiplication and transposition, reframed around
+  genotype data, building toward the sample-similarity matrix that SVD and
+  PCA operate on.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+tutorial_options(exercise.timelimit = 60)
+```
+
+## Why matrices?
+
+A PLINK-style genotype dataset is, underneath all the file formats, just a
+matrix: one row per genetic variant (SNP), one column per sample, and each
+entry is a genotype call -- usually coded `0`, `1`, or `2` copies of some
+reference allele.
+
+You already know how to multiply matrices and compute transposes and
+inverses. This tutorial does not introduce any new arithmetic. It only
+asks you to apply matrix multiplication and transposition to a genotype
+matrix, and look at what comes out. That object -- which you will build
+yourself in this tutorial -- is exactly what Singular Value Decomposition
+(covered in Tutorial 2) and Principal Components Analysis (Tutorial 3)
+operate on.
+
+## A toy genotype matrix
+
+Here is a tiny genotype matrix: 4 SNPs (rows) measured on 5 samples
+(columns). Each entry is the count of a reference allele (0, 1, or 2).
+
+```{r toy-matrix, exercise=TRUE}
+G <- matrix(
+  c(0, 1, 2, 1, 0,
+    2, 2, 1, 0, 0,
+    1, 0, 0, 2, 1,
+    0, 1, 1, 1, 2),
+  nrow = 4, byrow = TRUE
+)
+rownames(G) <- paste0("SNP", 1:4)
+colnames(G) <- paste0("S", 1:5)
+G
+```
+
+```{r quiz-dims, echo=FALSE}
+quiz(
+  question("What are the dimensions of G, and what does each dimension represent?",
+    answer("4 rows (SNPs) by 5 columns (samples)", correct = TRUE),
+    answer("5 rows (samples) by 4 columns (SNPs)"),
+    answer("4 rows (samples) by 5 columns (SNPs)"),
+    answer("There is no fixed convention; it depends on the file format only"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Transposing: samples as rows
+
+Depending on which downstream function you call (this is exactly the kind
+of detail that causes bugs), you may need samples as rows instead of
+columns. You already know how to do this.
+
+```{r transpose-ex, exercise=TRUE, exercise.setup = "toy-matrix"}
+# Produce a matrix with samples as rows and SNPs as columns.
+# Call it Gt.
+
+```
+
+```{r transpose-ex-hint}
+Gt <- t(G)
+```
+
+```{r transpose-ex-solution}
+Gt <- t(G)
+Gt
+```
+
+## Centering: subtracting a mean from every row
+
+Before anything resembling SVD or PCA happens, data are almost always
+**centered**: each row (here, each SNP) has its own mean subtracted off,
+so that the row's values are expressed as deviations from that SNP's
+average genotype across samples.
+
+This is matrix arithmetic you already know: for each row, compute the mean,
+then subtract it from every entry in that row.
+
+```{r center-setup, exercise=TRUE, exercise.setup = "toy-matrix"}
+row_means <- rowMeans(G)
+row_means
+```
+
+```{r center-ex, exercise=TRUE, exercise.setup = "toy-matrix"}
+# Build Gc, a centered version of G, where every row has mean 0.
+# Hint: sweep() subtracts a vector from the rows/columns of a matrix,
+# or you can do it with a loop / matrix subtraction.
+
+```
+
+```{r center-ex-hint}
+Gc <- sweep(G, 1, rowMeans(G), FUN = "-")
+```
+
+```{r center-ex-solution}
+Gc <- sweep(G, 1, rowMeans(G), FUN = "-")
+Gc
+rowMeans(Gc)  # should be (numerically) zero
+```
+
+## The sample-similarity matrix
+
+Now the key step. Take the centered matrix `Gc` (SNPs x samples) and form
+
+$$ C = G_c^\top G_c $$
+
+This is an ordinary matrix product: transpose `Gc`, then multiply it by
+`Gc`. You already know how to do both operations.
+
+```{r sim-ex, exercise=TRUE, exercise.setup = "center-ex-solution"}
+# Form C = t(Gc) %*% Gc
+
+```
+
+```{r sim-ex-hint}
+C <- t(Gc) %*% Gc
+```
+
+```{r sim-ex-solution}
+C <- t(Gc) %*% Gc
+C
+dim(C)
+```
+
+Look at the dimensions of `C`. If `Gc` is SNPs-by-samples, `C` is
+**samples-by-samples**: one row and one column per sample. Entry
+`C[i, j]` is the dot product of sample `i`'s centered genotype column with
+sample `j`'s centered genotype column, summed over all SNPs.
+
+```{r quiz-sim, echo=FALSE}
+quiz(
+  question("Two samples that tend to carry the same alleles at the same SNPs (relative to the SNP averages) will have an entry C[i,j] that is...",
+    answer("Large and positive", correct = TRUE),
+    answer("Large and negative"),
+    answer("Exactly zero"),
+    answer("Undefined"),
+    allow_retry = TRUE
+  ),
+  question("What would `t(Gc) %*% Gc / (nrow(Gc) - 1)` be called in ordinary statistics?",
+    answer("A sample covariance matrix between samples", correct = TRUE),
+    answer("A correlation matrix"),
+    answer("An inverse matrix"),
+    answer("A design matrix"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Why this matters
+
+You built `C = t(Gc) %*% Gc` using only matrix multiplication and
+transposition -- operations you already had. But `C` captures something
+new: how similar every pair of samples is, averaged over all the SNPs you
+measured.
+
+Samples with similar ancestry tend to carry similar alleles at many SNPs,
+so they should produce **larger** entries in `C` with each other than with
+samples of different ancestry. Finding structure in `C` -- which samples
+group together -- is exactly the problem that SVD and PCA solve, and it is
+the subject of the next two tutorials.
+
+## Recap
+
+- A genotype matrix is SNPs-by-samples (or samples-by-SNPs); you must track
+  which convention a function expects.
+- Centering subtracts each row's mean from that row -- ordinary matrix
+  subtraction.
+- `t(Gc) %*% Gc` is a samples-by-samples similarity (covariance-like)
+  matrix, built entirely from matrix multiplication and transposition.
+- The next tutorial asks: how do we find the *dominant directions* of
+  variation hiding inside a matrix like `Gc` (or `C`)? That is what the
+  Singular Value Decomposition does.
+
+## Finishing up
+
+```{r exit-button, echo=FALSE}
+shiny::actionButton("exit_tutorial", "Exit tutorial and return to R console",
+  icon = shiny::icon("power-off")
+)
+```
+
+```{r context="server"}
+shiny::observeEvent(input$exit_tutorial, {
+  shiny::showNotification(
+    "Stopping the tutorial. You can now return to your R console.",
+    type = "message", duration = 5
+  )
+  session$onFlushed(function() {
+    later::later(function() shiny::stopApp(), delay = 0.5)
+  }, once = TRUE)
+})
+```
+
+When you are done, click the button above rather than interrupting R with
+Ctrl-C. It cleanly shuts down this tutorial's local web server and hands
+control back to your R console.

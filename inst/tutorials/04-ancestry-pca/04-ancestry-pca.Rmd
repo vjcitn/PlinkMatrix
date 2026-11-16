@@ -1,0 +1,233 @@
+---
+title: "4. Ancestry Discrimination with Real Genotypes"
+output: learnr::tutorial
+runtime: shiny_prerendered
+description: >
+  Applies SVD-based PCA to real GEUVADIS genotype data distributed with
+  PlinkMatrix, reproducing and extending the package vignette's ancestry
+  PCA to connect the preceding three tutorials to a real application.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(PlinkMatrix)
+library(irlba)
+knitr::opts_chunk$set(echo = TRUE)
+tutorial_options(exercise.timelimit = 120)
+
+gdemo <- example_PlinkMatrix()
+colnames(gdemo) <- gsub("0_", "", colnames(gdemo))
+data(g445samples, package = "PlinkMatrix")
+```
+
+## From toy matrices to real genotypes
+
+In Tutorial 1 you built a small genotype matrix by hand and formed a
+samples-by-samples similarity matrix. In Tutorials 2 and 3 you saw that
+SVD -- applied to centered data -- gives Principal Components, new
+coordinates ranked by how much variation they capture.
+
+Now you'll apply exactly that machinery to real data: genotypes on 445
+samples from the GEUVADIS project, bundled with this package via PLINK bed
+files and exposed as a `DelayedArray`. Each sample has a known population
+of origin. The question: does PCA on genotypes alone recover population
+structure, with no ancestry labels used in the computation?
+
+## The data
+
+```{r show-data, exercise=TRUE}
+gdemo
+dim(gdemo)
+```
+
+`gdemo` is SNPs-by-samples, just like the toy matrix in Tutorial 1, except
+now there are hundreds of thousands of SNPs. The samples have known
+population labels:
+
+```{r show-labels, exercise=TRUE}
+table(g445samples$Population.code)
+```
+
+```{r quiz-setup, echo=FALSE}
+quiz(
+  question("If genotype data carry no ancestry information, what would you expect a PCA plot colored by population to look like?",
+    answer("Populations completely mixed together, no visible separation", correct = TRUE),
+    answer("Perfectly separated clusters, one per population"),
+    answer("A single straight line"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Why subsample SNPs?
+
+With hundreds of thousands of SNPs, computing a full SVD is expensive, and
+nearby SNPs on a chromosome are often highly correlated (linkage
+disequilibrium), so they carry redundant information. The vignette -- and
+this tutorial -- take a random sample of SNPs and use a *fast, approximate*
+SVD (`irlba::prcomp_irlba`) that computes only the first few PCs rather
+than the entire decomposition.
+
+```{r subsample-ex, exercise=TRUE}
+set.seed(1234)
+ss <- sort(sample(seq_len(nrow(gdemo)), size = 1000))
+length(ss)
+```
+
+```{r quiz-subsample, echo=FALSE}
+quiz(
+  question("Why is it reasonable to use only 1000 randomly chosen SNPs out of hundreds of thousands, rather than all of them, for this purpose?",
+    answer("Nearby/correlated SNPs carry redundant information, and a large random sample still captures genome-wide population structure at much lower computational cost", correct = TRUE),
+    answer("Because PCA requires exactly 1000 variables to work"),
+    answer("Because using more SNPs would make the populations separate perfectly, which should be avoided"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Running PCA on the genotype matrix
+
+`prcomp_irlba` expects samples as rows (recall Tutorial 1's transpose
+exercise), and centers the data internally before computing the SVD.
+
+```{r pca-run, exercise=TRUE, exercise.setup = "subsample-ex"}
+pca <- prcomp_irlba(t(gdemo[ss, ]), n = 10)
+dim(pca$x)       # samples x PCs
+head(pca$x[, 1:4])
+```
+
+## Visualizing population structure
+
+```{r pca-plot, exercise=TRUE, exercise.setup = "pca-run"}
+pairs(pca$x[, 1:4], col = factor(g445samples$Population.code),
+      pch = 19, cex = 0.5,
+      main = "First four PCs, colored by population")
+legend("topright", legend = levels(factor(g445samples$Population.code)),
+       col = seq_along(levels(factor(g445samples$Population.code))),
+       pch = 19, cex = 0.7, xpd = NA)
+```
+
+```{r quiz-plot, echo=FALSE}
+quiz(
+  question("Which pair of PCs appears to separate populations most clearly in this plot?",
+    answer("PC1 and PC2", correct = TRUE),
+    answer("PC3 and PC4"),
+    answer("None of them separate populations at all"),
+    allow_retry = TRUE
+  ),
+  question("The population labels (g445samples$Population.code) were used for...",
+    answer("Coloring the plot only -- PCA itself never saw the labels", correct = TRUE),
+    answer("Computing the principal components directly"),
+    answer("Choosing which SNPs to subsample"),
+    allow_retry = TRUE
+  )
+)
+```
+
+This is the central point: PCA is an **unsupervised** method. It never
+sees the population labels. It simply finds the directions of greatest
+genetic variation across samples. That those directions align so closely
+with known ancestry is evidence that ancestry is, in fact, the dominant
+source of common genetic variation across these samples -- not an
+artifact of how the analysis was set up.
+
+## Exploring robustness
+
+Try changing the number of SNPs subsampled, or the random seed, and see
+whether the population separation in PC1/PC2 holds up.
+
+```{r explore-ex, exercise=TRUE}
+set.seed(99)
+ss2 <- sort(sample(seq_len(nrow(gdemo)), size = 300))
+pca2 <- prcomp_irlba(t(gdemo[ss2, ]), n = 4)
+plot(pca2$x[, 1:2], col = factor(g445samples$Population.code),
+     pch = 19, cex = 0.6, xlab = "PC1", ylab = "PC2",
+     main = "PCA with a smaller, different SNP subsample")
+```
+
+```{r quiz-explore, echo=FALSE}
+quiz(
+  question("Changing the SNPs sampled (fewer SNPs, different seed) and re-running PCA...",
+    answer("Still tends to show population structure along similar PC1/PC2 axes, though with more sampling noise with fewer SNPs", correct = TRUE),
+    answer("Produces a completely different, unrelated structure each time"),
+    answer("Has no effect whatsoever on the result"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## One more way to see the same structure: a boxplot
+
+A single derived score -- here, PC1 + PC2 -- can sometimes separate groups
+even more simply than a 2D scatterplot.
+
+```{r box-ex, exercise=TRUE, exercise.setup = "pca-run"}
+boxplot(split(pca$x[, 2] + pca$x[, 1], g445samples$Population.code),
+        main = "PC1 + PC2 by population", ylab = "PC1 + PC2")
+```
+
+## Closing the loop
+
+Recall Tutorial 1's similarity matrix `C = t(Gc) %*% Gc`, built from
+centered genotypes with nothing but matrix multiplication and
+transposition. What `prcomp_irlba` computed here is mathematically
+equivalent to: form that samples-by-samples similarity matrix from the
+centered genotype data, then find its dominant eigenvectors -- which are
+exactly the right singular vectors of the centered data matrix (Tutorial
+2). Each sample's principal component score (Tutorial 3) points in
+exactly the same direction as its entry in that eigenvector; the score is
+just the eigenvector rescaled by the corresponding singular value (so
+that samples with the most extreme scores are also the ones that stand
+out most in `C`).
+
+Every step from "matrix multiplication and transposition" to "ancestry
+inferred directly from genotypes, with no labels used in the computation"
+is the chain you worked through across these four tutorials:
+
+1. **Matrix operations you already knew** (Tutorial 1) build a
+   sample-similarity matrix from genotypes.
+2. **SVD** (Tutorial 2) decomposes any matrix into rotate-stretch-rotate,
+   ranking directions of variation from most to least.
+3. **PCA** (Tutorial 3) is SVD applied to centered data: new coordinates
+   ranked by variance explained.
+4. **Here**, those PC coordinates -- computed from genotypes alone --
+   recover known human population structure.
+
+## Recap
+
+- Real genotype PCA uses the same centering + SVD machinery as the toy
+  examples, just at much larger scale, with a fast approximate SVD
+  (`irlba`) computing only as many PCs as needed.
+- PCA is unsupervised: labels are used only to *interpret* the result, not
+  to compute it.
+- Population structure typically shows up in the first few PCs because
+  ancestry is a major source of correlated genetic variation across many
+  SNPs simultaneously.
+- The same approach generalizes to finding other latent structure in
+  high-dimensional data -- batch effects, cell types, disease subtypes --
+  anywhere many correlated measurements share a smaller number of
+  underlying drivers.
+
+## Finishing up
+
+```{r exit-button, echo=FALSE}
+shiny::actionButton("exit_tutorial", "Exit tutorial and return to R console",
+  icon = shiny::icon("power-off")
+)
+```
+
+```{r context="server"}
+shiny::observeEvent(input$exit_tutorial, {
+  shiny::showNotification(
+    "Stopping the tutorial. You can now return to your R console.",
+    type = "message", duration = 5
+  )
+  session$onFlushed(function() {
+    later::later(function() shiny::stopApp(), delay = 0.5)
+  }, once = TRUE)
+})
+```
+
+When you are done, click the button above rather than interrupting R with
+Ctrl-C. It cleanly shuts down this tutorial's local web server and hands
+control back to your R console.
