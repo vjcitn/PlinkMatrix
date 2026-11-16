@@ -13,7 +13,8 @@ Description: This package provides a DelayedArray interface for plink bed files.
 	Example data from the GEUVADIS project (internationalgenome.org) are used for demonstration.
 Depends: R (>= 4.1.0), methods, Rcpp, DelayedArray, SummarizedExperiment
 Suggests: knitr, BiocStyle, testthat, rmarkdown, irlba,
-	GenomeInfoDb, learnr, shiny, later
+	GenomeInfoDb, learnr, shiny, later, ggplot2, plotly,
+	DelayedMatrixStats
 Imports: BiocFileCache, GenomicRanges,
 	IRanges
 License: MIT + file LICENSE

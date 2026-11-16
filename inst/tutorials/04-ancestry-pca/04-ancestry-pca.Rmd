@@ -12,12 +12,24 @@ description: >
 library(learnr)
 library(PlinkMatrix)
 library(irlba)
+library(ggplot2)
+library(plotly)
 knitr::opts_chunk$set(echo = TRUE)
 tutorial_options(exercise.timelimit = 120)
 
 gdemo <- example_PlinkMatrix()
 colnames(gdemo) <- gsub("0_", "", colnames(gdemo))
 data(g445samples, package = "PlinkMatrix")
+
+# scatterplot of one PC pair, colored by population, with pan/zoom via plotly
+plot_pcs <- function(x, labels, pcx = 1, pcy = 2, title = NULL) {
+  df <- data.frame(PCx = x[, pcx], PCy = x[, pcy], Population = labels)
+  p <- ggplot(df, aes(x = PCx, y = PCy, color = Population, text = Population)) +
+    geom_point(size = 1.5, alpha = 0.8) +
+    labs(x = paste0("PC", pcx), y = paste0("PC", pcy), title = title) +
+    theme_minimal()
+  ggplotly(p, tooltip = "text")
+}
 ```
 
 ## From toy matrices to real genotypes
@@ -98,13 +110,18 @@ head(pca$x[, 1:4])
 
 ## Visualizing population structure
 
+The plots below are `ggplot2` scatterplots passed through `ggplotly()`,
+which makes them interactive: drag to zoom into a region, double-click to
+reset, and hover over a point to see its population.
+
 ```{r pca-plot, exercise=TRUE, exercise.setup = "pca-run"}
-pairs(pca$x[, 1:4], col = factor(g445samples$Population.code),
-      pch = 19, cex = 0.5,
-      main = "First four PCs, colored by population")
-legend("topright", legend = levels(factor(g445samples$Population.code)),
-       col = seq_along(levels(factor(g445samples$Population.code))),
-       pch = 19, cex = 0.7, xpd = NA)
+plot_pcs(pca$x, g445samples$Population.code, pcx = 1, pcy = 2,
+         title = "PC1 vs PC2, colored by population")
+```
+
+```{r pca-plot-34, exercise=TRUE, exercise.setup = "pca-run"}
+plot_pcs(pca$x, g445samples$Population.code, pcx = 3, pcy = 4,
+         title = "PC3 vs PC4, colored by population")
 ```
 
 ```{r quiz-plot, echo=FALSE}
@@ -134,15 +151,15 @@ artifact of how the analysis was set up.
 ## Exploring robustness
 
 Try changing the number of SNPs subsampled, or the random seed, and see
-whether the population separation in PC1/PC2 holds up.
+whether the population separation in PC1/PC2 holds up. Zoom in on the plot
+to check whether the clusters still look well separated at close range.
 
 ```{r explore-ex, exercise=TRUE}
 set.seed(99)
 ss2 <- sort(sample(seq_len(nrow(gdemo)), size = 300))
 pca2 <- prcomp_irlba(t(gdemo[ss2, ]), n = 4)
-plot(pca2$x[, 1:2], col = factor(g445samples$Population.code),
-     pch = 19, cex = 0.6, xlab = "PC1", ylab = "PC2",
-     main = "PCA with a smaller, different SNP subsample")
+plot_pcs(pca2$x, g445samples$Population.code, pcx = 1, pcy = 2,
+         title = "PCA with a smaller, different SNP subsample")
 ```
 
 ```{r quiz-explore, echo=FALSE}
@@ -156,14 +173,201 @@ quiz(
 )
 ```
 
+## Finding substructure within the European samples
+
+Look again at PC1 vs PC2 above: one population -- YRI, from Africa -- sits
+far apart from the other four, which are all European (CEU, FIN, GBR,
+TSI). That one large separation dominates PC1, and it can hide finer
+structure *among* the European populations, since PC1 and PC2 are chosen
+to capture the single biggest axis of variation in the whole sample, which
+here is "African vs. European."
+
+To see whether the European populations separate from each other, drop
+YRI entirely and rerun PCA on the European samples alone. With YRI's large
+contribution to the variance removed, the leading PCs are now free to
+pick up smaller-scale differences among CEU, FIN, GBR, and TSI.
+
+```{r eur-sub, exercise=TRUE, exercise.setup = "subsample-ex"}
+is_eur <- g445samples$Population.code != "YRI"
+pca_eur <- prcomp_irlba(t(gdemo[ss, is_eur]), n = 10)
+plot_pcs(pca_eur$x, g445samples$Population.code[is_eur], pcx = 1, pcy = 2,
+         title = "Europeans only: PC1 vs PC2")
+```
+
+Zoom in (drag a rectangle on the plot) to see how well the four European
+populations separate from one another -- much more subtly than YRI
+separated from everyone else, but it's there.
+
+```{r quiz-eur-sub, echo=FALSE}
+quiz(
+  question("Why did removing YRI reveal more structure among the European populations?",
+    answer("PC1/PC2 always capture the single largest axis of variation in the data; with YRI present, that axis is 'African vs. European', which swamps smaller European-vs-European differences", correct = TRUE),
+    answer("Because YRI samples were mislabeled and shouldn't have been in the data"),
+    answer("Because PCA cannot be run on fewer than 445 samples"),
+    answer("Removing samples always improves separation, regardless of which ones are removed"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Picking SNPs by variance instead of at random
+
+The random SNP subsample used above treats every SNP as equally useful.
+Most SNPs, though, are nearly the same genotype in everyone (low
+variance across samples) and carry little information about how samples
+differ. SNPs with *high* variance across samples vary the most from
+person to person, so a sample of the most variable SNPs may pack more
+discriminating power into the same SNP budget than a random sample does.
+
+There is a subtlety: if you compute variance across **all** 445 samples
+(including YRI), the highest-variance SNPs will mostly be ones that
+differ between Africa and Europe -- the same big axis you already saw.
+To look for SNPs that discriminate *within* Europe, compute variance only
+**among the European samples**.
+
+```{r topvar-ex, exercise=TRUE, exercise.setup = "subsample-ex"}
+is_eur <- g445samples$Population.code != "YRI"
+
+# variance of each SNP's genotype, computed only across European samples
+var_eur <- DelayedMatrixStats::rowVars(gdemo[, is_eur])
+
+# the 1000 SNPs with the highest variance among Europeans
+top_var <- order(var_eur, decreasing = TRUE)[seq_len(1000)]
+head(sort(var_eur, decreasing = TRUE))
+```
+
+```{r quiz-topvar, echo=FALSE}
+quiz(
+  question("Why compute the variance across European samples only, rather than across all 445 samples, when the goal is to discriminate European subpopulations?",
+    answer("Variance across all samples is dominated by the African-vs-European difference, so the highest-variance SNPs would mostly reflect that axis rather than structure within Europe", correct = TRUE),
+    answer("DelayedMatrixStats::rowVars cannot be computed on more than 358 samples at a time"),
+    answer("It makes no difference which samples are used to compute the variance"),
+    allow_retry = TRUE
+  )
+)
+```
+
+Now rerun PCA restricted to the Europeans, using these 1000
+highest-variance SNPs instead of the earlier random 1000, and compare the
+result to the "Europeans only" plot from the previous section.
+
+```{r topvar-pca, exercise=TRUE, exercise.setup = "topvar-ex"}
+pca_var <- prcomp_irlba(t(gdemo[top_var, is_eur]), n = 10)
+plot_pcs(pca_var$x, g445samples$Population.code[is_eur], pcx = 1, pcy = 2,
+         title = "Europeans only, top-variance SNPs: PC1 vs PC2")
+```
+
+Look closely at this plot: instead of four smoothly overlapping population
+clouds, you likely see a tight **grid** of small sub-clusters, each
+containing a mix of all four populations. That grid is not better
+discrimination -- it is an artifact, and a cautionary tale about SNP
+selection.
+
+```{r quiz-topvar-compare, echo=FALSE}
+quiz(
+  question("What does the grid-like pattern most likely indicate?",
+    answer("A few of the top-variance SNPs are nearly duplicates of each other (in very strong linkage disequilibrium), so PC1/PC2 collapse to the discrete 0/1/2 genotype calls of a handful of redundant markers rather than aggregating many independent SNPs", correct = TRUE),
+    answer("The European populations are extremely well separated into nine distinct subpopulations"),
+    answer("A plotting error -- grids like this have no biological or statistical explanation"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Why the grid appears: linkage disequilibrium
+
+Variance alone says nothing about whether two SNPs carry the *same*
+information. Nearby SNPs on a chromosome are often inherited together
+(linkage disequilibrium, LD) and so are highly correlated -- selecting
+purely by variance, with no regard for position, can pack your SNP list
+with near-duplicates. Check the pairwise correlation among the 30
+highest-variance SNPs selected above:
+
+```{r topvar-diagnose, exercise=TRUE, exercise.setup = "topvar-ex"}
+mat_top30 <- as.matrix(gdemo[top_var[1:30], is_eur])
+ld <- cor(t(mat_top30))
+diag(ld) <- NA
+max(abs(ld), na.rm = TRUE)                     # largest pairwise correlation
+sum(abs(ld) > 0.9, na.rm = TRUE) / 2            # how many near-duplicate pairs
+```
+
+```{r quiz-ld, echo=FALSE}
+quiz(
+  question("Finding many pairs of SNPs with correlation near 1 among your top-variance list tells you that...",
+    answer("Those SNPs are largely redundant with each other -- keeping all of them adds much less independent information than their count suggests", correct = TRUE),
+    answer("The genotyping process made an error and those SNPs should be identical"),
+    answer("High correlation between SNPs always means they are on different chromosomes"),
+    allow_retry = TRUE
+  )
+)
+```
+
+## Fixing it: thinning by position before selecting
+
+A simple fix is to walk down the variance-ranked list and skip any SNP
+that falls too close (here, within 100,000 bases) to a SNP you have
+already kept. This is a crude stand-in for proper LD pruning, but it is
+enough to break up the redundant clusters.
+
+```{r thin-ex, exercise=TRUE, exercise.setup = "topvar-ex"}
+pos <- as.numeric(vapply(strsplit(rownames(gdemo), "_"), `[`, "", 2))
+
+ord <- order(var_eur, decreasing = TRUE)
+kept <- integer(0)
+kept_pos <- numeric(0)
+for (i in ord) {
+  if (length(kept_pos) == 0 || all(abs(kept_pos - pos[i]) > 1e5)) {
+    kept <- c(kept, i)
+    kept_pos <- c(kept_pos, pos[i])
+  }
+  if (length(kept) >= 1000) break
+}
+length(kept)   # may be fewer than 1000 if the region is small
+```
+
+```{r thin-pca, exercise=TRUE, exercise.setup = "thin-ex"}
+pca_thin <- prcomp_irlba(t(gdemo[kept, is_eur]), n = 10)
+plot_pcs(pca_thin$x, g445samples$Population.code[is_eur], pcx = 1, pcy = 2,
+         title = "Europeans only, LD-thinned top-variance SNPs: PC1 vs PC2")
+```
+
+```{r quiz-thin, echo=FALSE}
+quiz(
+  question("After thinning by position before selecting on variance, compared to the un-thinned top-variance plot, you should see...",
+    answer("The grid artifact disappears, and the European populations separate about as well as -- not noticeably better than -- the original random SNP selection", correct = TRUE),
+    answer("An even more extreme grid pattern than before"),
+    answer("Perfect separation of all four European populations into distinct, non-overlapping clusters"),
+    allow_retry = TRUE
+  ),
+  question("What is the real lesson from this section?",
+    answer("Filtering individual SNPs by their own variance, with no regard for correlation between SNPs or for a particular grouping you care about, is not a reliable way to find or improve discrimination of subgroups -- and can even manufacture artifacts that look like structure", correct = TRUE),
+    answer("High-variance SNPs are always the best choice for any analysis"),
+    answer("Random SNP selection should never be used because it ignores variance"),
+    allow_retry = TRUE
+  )
+)
+```
+
+This is a genuinely useful (and common) pitfall in genomic data analysis:
+filtering features one at a time by their own variance ignores
+correlation *between* features. PCA's power on the random SNP sample came
+from aggregating many weak, largely independent signals across SNPs --
+exactly the kind of aggregation that a short list of redundant,
+LD-linked SNPs cannot replicate, no matter how large each one's
+individual variance is.
+
 ## One more way to see the same structure: a boxplot
 
 A single derived score -- here, PC1 + PC2 -- can sometimes separate groups
 even more simply than a 2D scatterplot.
 
 ```{r box-ex, exercise=TRUE, exercise.setup = "pca-run"}
-boxplot(split(pca$x[, 2] + pca$x[, 1], g445samples$Population.code),
-        main = "PC1 + PC2 by population", ylab = "PC1 + PC2")
+box_df <- data.frame(Score = pca$x[, 2] + pca$x[, 1],
+                      Population = g445samples$Population.code)
+ggplot(box_df, aes(x = Population, y = Score, fill = Population)) +
+  geom_boxplot(show.legend = FALSE) +
+  labs(y = "PC1 + PC2", title = "PC1 + PC2 by population") +
+  theme_minimal()
 ```
 
 ## Closing the loop
@@ -207,6 +411,14 @@ is the chain you worked through across these four tutorials:
   high-dimensional data -- batch effects, cell types, disease subtypes --
   anywhere many correlated measurements share a smaller number of
   underlying drivers.
+- A single dominant axis of variation (here, African vs. European
+  ancestry) can hide finer substructure; interactively zooming, or
+  removing the dominant group and rerunning PCA, can reveal it.
+- Selecting SNPs by their individual variance, without accounting for
+  linkage disequilibrium between SNPs, can concentrate your selection on
+  a handful of redundant markers and produce artifacts (like the grid
+  pattern seen above) that look like structure but are not. Random
+  sampling across many markers is often a safer default.
 
 ## Finishing up
 
