@@ -121,7 +121,20 @@ $$ C = G_c^\top G_c $$
 This is an ordinary matrix product: transpose `Gc`, then multiply it by
 `Gc`. You already know how to do both operations.
 
-```{r sim-ex, exercise=TRUE, exercise.setup = "center-ex-solution"}
+```{r sim-setup, include=FALSE}
+G <- matrix(
+  c(0, 1, 2, 1, 0,
+    2, 2, 1, 0, 0,
+    1, 0, 0, 2, 1,
+    0, 1, 1, 1, 2),
+  nrow = 4, byrow = TRUE
+)
+rownames(G) <- paste0("SNP", 1:4)
+colnames(G) <- paste0("S", 1:5)
+Gc <- sweep(G, 1, rowMeans(G), FUN = "-")
+```
+
+```{r sim-ex, exercise=TRUE, exercise.setup = "sim-setup"}
 # Form C = t(Gc) %*% Gc
 
 ```
