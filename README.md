@@ -4,6 +4,17 @@ Given a collection of .bed, .bim and .fam files produced
 for use with Plink, this package facilitates simple
 array-like operations for retrieving genotype data.
 
+![NEW!](https://img.shields.io/badge/NEW!-black?style=flat-square&labelColor=yellow&color=yellow) learnr tutorials on SVD illustrated with human SNPs!
+
+- be sure learnr and shiny are installed
+- `PlinkMatrix_tutorials()` starts a simple menu interface
+
+![](man/figures/intf1.jpg)
+
+- eventually gets to
+
+![](man/figures/tut1.jpg)
+
 ## Installation
 
 Use Bioconductor 3.23.
