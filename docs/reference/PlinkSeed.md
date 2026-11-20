@@ -48,6 +48,6 @@ PlinkSeed
 #>         n_samples), dimnames = list(variant_ids, sample_ids), 
 #>         fam = fam, bim = bim)
 #> }
-#> <bytecode: 0x7bf0dfe548>
+#> <bytecode: 0x7a574b6238>
 #> <environment: namespace:PlinkMatrix>
 ```

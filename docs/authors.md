@@ -13,13 +13,13 @@ Source:
 [`DESCRIPTION`](https://github.com/vjcitn/PlinkMatrix/blob/HEAD/DESCRIPTION)
 
 Carey V (2026). *PlinkMatrix: DelayedArray interface for plink bed
-files*. R package version 1.1.2,
+files*. R package version 1.1.3,
 <https://github.com/vjcitn/PlinkMatrix>.
 
     @Manual{,
       title = {PlinkMatrix: DelayedArray interface for plink bed files},
       author = {Vince Carey},
       year = {2026},
-      note = {R package version 1.1.2},
+      note = {R package version 1.1.3},
       url = {https://github.com/vjcitn/PlinkMatrix},
     }

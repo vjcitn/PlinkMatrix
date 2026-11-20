@@ -164,7 +164,7 @@ sessionInfo()
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] irlba_2.4.1                 PlinkMatrix_1.1.2          
+    ##  [1] irlba_2.4.1                 PlinkMatrix_1.1.3          
     ##  [3] SummarizedExperiment_1.43.0 Biobase_2.73.2             
     ##  [5] GenomicRanges_1.65.4        Seqinfo_1.3.2              
     ##  [7] DelayedArray_0.39.8         SparseArray_1.13.4         

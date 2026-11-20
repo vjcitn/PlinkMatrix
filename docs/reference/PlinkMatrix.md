@@ -28,6 +28,6 @@ PlinkMatrix
 #>     seed <- PlinkSeed(filepath)
 #>     DelayedArray(seed)
 #> }
-#> <bytecode: 0x7bf8f2baf0>
+#> <bytecode: 0x7a4cac9818>
 #> <environment: namespace:PlinkMatrix>
 ```

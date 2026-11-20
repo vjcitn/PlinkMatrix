@@ -39,6 +39,6 @@ read_bed_subset
 #>     .Call(`_PlinkMatrix_read_bed_subset`, prefix, snp_indices, 
 #>         sample_indices, n_total_samples)
 #> }
-#> <bytecode: 0x7bec4a1658>
+#> <bytecode: 0x7a5b604cb8>
 #> <environment: namespace:PlinkMatrix>
 ```
